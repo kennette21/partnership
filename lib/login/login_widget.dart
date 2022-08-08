@@ -4,6 +4,7 @@ import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -42,7 +43,7 @@ class _LoginWidgetState extends State<LoginWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      backgroundColor: Color(0xFF14181B),
+      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Padding(
@@ -56,12 +57,20 @@ class _LoginWidgetState extends State<LoginWidget> {
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/PS_Logo_for_Signup.png',
-                      width: 160,
-                      height: 105,
-                      fit: BoxFit.cover,
-                    ),
+                    if (Theme.of(context).brightness == Brightness.light)
+                      SvgPicture.asset(
+                        'assets/images/Partnership_Logo_Dark.svg',
+                        width: 160,
+                        height: 105,
+                        fit: BoxFit.cover,
+                      ),
+                    if (Theme.of(context).brightness == Brightness.dark)
+                      Image.asset(
+                        'assets/images/PS_Logo_for_Signup.png',
+                        width: 160,
+                        height: 105,
+                        fit: BoxFit.cover,
+                      ),
                   ],
                 ),
               ),
@@ -73,7 +82,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                     children: [
                       TabBar(
                         isScrollable: true,
-                        labelColor: Colors.white,
+                        labelColor: FlutterFlowTheme.of(context).primaryText,
+                        unselectedLabelColor:
+                            FlutterFlowTheme.of(context).secondaryText,
                         labelStyle:
                             FlutterFlowTheme.of(context).subtitle1.override(
                                   fontFamily: 'Outfit',
@@ -81,7 +92,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
                                 ),
-                        indicatorColor: Colors.white,
+                        indicatorColor:
+                            FlutterFlowTheme.of(context).primaryText,
                         tabs: [
                           Tab(
                             text: 'Sign In',
@@ -303,7 +315,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                       .override(
                                                         fontFamily: 'Outfit',
                                                         color:
-                                                            Color(0xC8FFFFFF),
+                                                            FlutterFlowTheme.of(
+                                                                    context)
+                                                                .secondaryText,
                                                         fontSize: 16,
                                                         fontWeight:
                                                             FontWeight.normal,

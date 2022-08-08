@@ -1,7 +1,10 @@
 import '../backend/backend.dart';
+import '../components/skilltag_widget.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
+import '../profile_view/profile_view_widget.dart';
+import '../custom_code/widgets/index.dart' as custom_widgets;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -57,130 +60,131 @@ class _ProjectWidgetState extends State<ProjectWidget> {
             centerTitle: false,
             elevation: 2,
           ),
-          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+          backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
           body: SafeArea(
             child: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Text(
-                          'Description',
-                          style: FlutterFlowTheme.of(context).bodyText2,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(4, 0, 0, 0),
-                    child: Text(
-                      projectProjectsRecord.description!,
-                      textAlign: TextAlign.start,
-                      style: FlutterFlowTheme.of(context).bodyText1,
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Text(
-                          'Skills In This Project',
-                          style: FlutterFlowTheme.of(context).bodyText2,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsetsDirectional.fromSTEB(4, 4, 4, 0),
-                    child: FutureBuilder<List<RatingsRecord>>(
-                      future: queryRatingsRecordOnce(
-                        queryBuilder: (ratingsRecord) => ratingsRecord
-                            .where('project', isEqualTo: widget.projectRef),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Text(
+                            'Description',
+                            style: FlutterFlowTheme.of(context).bodyText2,
+                          ),
+                        ],
                       ),
-                      builder: (context, snapshot) {
-                        // Customize what your widget looks like when it's loading.
-                        if (!snapshot.hasData) {
-                          return Center(
-                            child: SizedBox(
-                              width: 50,
-                              height: 50,
-                              child: CircularProgressIndicator(
-                                color:
-                                    FlutterFlowTheme.of(context).primaryColor,
-                              ),
-                            ),
-                          );
-                        }
-                        List<RatingsRecord> listViewSkillsRatingsRecordList =
-                            snapshot.data!;
-                        return ListView.builder(
-                          padding: EdgeInsets.zero,
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          itemCount: listViewSkillsRatingsRecordList.length,
-                          itemBuilder: (context, listViewSkillsIndex) {
-                            final listViewSkillsRatingsRecord =
-                                listViewSkillsRatingsRecordList[
-                                    listViewSkillsIndex];
-                            return StreamBuilder<SkillsRecord>(
-                              stream: SkillsRecord.getDocument(
-                                  listViewSkillsRatingsRecord.skill!),
-                              builder: (context, snapshot) {
-                                // Customize what your widget looks like when it's loading.
-                                if (!snapshot.hasData) {
-                                  return Center(
-                                    child: SizedBox(
-                                      width: 50,
-                                      height: 50,
-                                      child: CircularProgressIndicator(
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryColor,
-                                      ),
-                                    ),
-                                  );
-                                }
-                                final rowSkillsRecord = snapshot.data!;
-                                return Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      rowSkillsRecord.name!,
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyText1,
-                                    ),
-                                    RatingBarIndicator(
-                                      itemBuilder: (context, index) => Icon(
-                                        Icons.star_rounded,
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryColor,
-                                      ),
-                                      direction: Axis.horizontal,
-                                      rating: listViewSkillsRatingsRecord.value!
-                                          .toDouble(),
-                                      unratedColor: Color(0xFF9E9E9E),
-                                      itemCount: 3,
-                                      itemSize: 40,
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
                     ),
-                  ),
-                  Expanded(
-                    child: StreamBuilder<UsersRecord>(
+                    Container(
+                      width: double.infinity,
+                      height: 500,
+                      child: custom_widgets.MarkdownRenderer(
+                        width: double.infinity,
+                        height: 500,
+                        data: projectProjectsRecord.description!,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Text(
+                            'Skills In This Project',
+                            style: FlutterFlowTheme.of(context).bodyText2,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(4, 4, 4, 0),
+                      child: FutureBuilder<List<RatingsRecord>>(
+                        future: queryRatingsRecordOnce(
+                          queryBuilder: (ratingsRecord) => ratingsRecord
+                              .where('project', isEqualTo: widget.projectRef),
+                        ),
+                        builder: (context, snapshot) {
+                          // Customize what your widget looks like when it's loading.
+                          if (!snapshot.hasData) {
+                            return Center(
+                              child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: CircularProgressIndicator(
+                                  color:
+                                      FlutterFlowTheme.of(context).primaryColor,
+                                ),
+                              ),
+                            );
+                          }
+                          List<RatingsRecord> listViewSkillsRatingsRecordList =
+                              snapshot.data!;
+                          return ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: listViewSkillsRatingsRecordList.length,
+                            itemBuilder: (context, listViewSkillsIndex) {
+                              final listViewSkillsRatingsRecord =
+                                  listViewSkillsRatingsRecordList[
+                                      listViewSkillsIndex];
+                              return StreamBuilder<SkillsRecord>(
+                                stream: SkillsRecord.getDocument(
+                                    listViewSkillsRatingsRecord.skill!),
+                                builder: (context, snapshot) {
+                                  // Customize what your widget looks like when it's loading.
+                                  if (!snapshot.hasData) {
+                                    return Center(
+                                      child: SizedBox(
+                                        width: 50,
+                                        height: 50,
+                                        child: CircularProgressIndicator(
+                                          color: FlutterFlowTheme.of(context)
+                                              .primaryColor,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  final rowSkillsRecord = snapshot.data!;
+                                  return Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      SkilltagWidget(
+                                        value: rowSkillsRecord.name,
+                                        selected: true,
+                                      ),
+                                      RatingBarIndicator(
+                                        itemBuilder: (context, index) => Icon(
+                                          Icons.star_rounded,
+                                          color: FlutterFlowTheme.of(context)
+                                              .tertiaryColor,
+                                        ),
+                                        direction: Axis.horizontal,
+                                        rating: listViewSkillsRatingsRecord
+                                            .value!
+                                            .toDouble(),
+                                        unratedColor: Color(0xFF9E9E9E),
+                                        itemCount: 3,
+                                        itemSize: 40,
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    StreamBuilder<UsersRecord>(
                       stream: UsersRecord.getDocument(
                           projectProjectsRecord.founder!),
                       builder: (context, snapshot) {
@@ -219,70 +223,80 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                             Padding(
                               padding:
                                   EdgeInsetsDirectional.fromSTEB(8, 0, 8, 0),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  Container(
-                                    width: 120,
-                                    height: 120,
-                                    clipBehavior: Clip.antiAlias,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Image.network(
-                                      columnUsersRecord.photoUrl!,
-                                    ),
-                                  ),
-                                  Text(
-                                    columnUsersRecord.displayName!,
-                                    style:
-                                        FlutterFlowTheme.of(context).bodyText1,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Expanded(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.fromSTEB(
-                                        20, 0, 20, 0),
-                                    child: FFButtonWidget(
-                                      onPressed: () async {
-                                        await launchURL(
-                                            columnUsersRecord.calendar!);
-                                      },
-                                      text: 'Join Project',
-                                      options: FFButtonOptions(
-                                        width: double.infinity,
-                                        height: 40,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primaryColor,
-                                        textStyle: FlutterFlowTheme.of(context)
-                                            .subtitle2
-                                            .override(
-                                              fontFamily: 'Poppins',
-                                              color: Colors.white,
-                                            ),
-                                        borderSide: BorderSide(
-                                          color: Colors.transparent,
-                                          width: 1,
-                                        ),
-                                        borderRadius: BorderRadius.circular(8),
+                              child: InkWell(
+                                onTap: () async {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProfileViewWidget(
+                                        user: projectProjectsRecord.founder,
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  );
+                                },
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Container(
+                                      width: 120,
+                                      height: 120,
+                                      clipBehavior: Clip.antiAlias,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Image.network(
+                                        columnUsersRecord.photoUrl!,
+                                      ),
+                                    ),
+                                    Text(
+                                      columnUsersRecord.displayName!,
+                                      style: FlutterFlowTheme.of(context)
+                                          .bodyText1,
+                                    ),
+                                  ],
+                                ),
                               ),
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      20, 20, 20, 20),
+                                  child: FFButtonWidget(
+                                    onPressed: () async {
+                                      await launchURL(
+                                          columnUsersRecord.calendar!);
+                                    },
+                                    text: 'Join Project',
+                                    options: FFButtonOptions(
+                                      width: double.infinity,
+                                      height: 40,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryColor,
+                                      textStyle: FlutterFlowTheme.of(context)
+                                          .subtitle2
+                                          .override(
+                                            fontFamily: 'Poppins',
+                                            color: Colors.white,
+                                          ),
+                                      borderSide: BorderSide(
+                                        color: Colors.transparent,
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         );
                       },
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -39,62 +39,36 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: scaffoldKey,
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(100),
-        child: AppBar(
-          backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
-          automaticallyImplyLeading: false,
-          flexibleSpace: Padding(
-            padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 14),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(12, 0, 0, 0),
-                        child: FlutterFlowIconButton(
-                          borderColor: Colors.transparent,
-                          borderRadius: 30,
-                          borderWidth: 1,
-                          buttonSize: 50,
-                          icon: Icon(
-                            Icons.arrow_back_rounded,
-                            color: FlutterFlowTheme.of(context).primaryText,
-                            size: 30,
-                          ),
-                          onPressed: () async {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsetsDirectional.fromSTEB(24, 0, 0, 0),
-                  child: Text(
-                    'Edit Profile',
-                    style: FlutterFlowTheme.of(context).title2.override(
-                          fontFamily: 'Poppins',
-                          color: FlutterFlowTheme.of(context).primaryText,
-                          fontSize: 22,
-                        ),
-                  ),
-                ),
-              ],
-            ),
+      appBar: AppBar(
+        backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+        automaticallyImplyLeading: false,
+        leading: FlutterFlowIconButton(
+          borderColor: Colors.transparent,
+          borderRadius: 30,
+          borderWidth: 1,
+          buttonSize: 60,
+          icon: Icon(
+            Icons.arrow_back_rounded,
+            color: FlutterFlowTheme.of(context).primaryText,
+            size: 30,
           ),
-          actions: [],
-          elevation: 0,
+          onPressed: () {
+            print('IconButton pressed ...');
+          },
         ),
+        title: Text(
+          'Page Title',
+          style: FlutterFlowTheme.of(context).title2.override(
+                fontFamily: 'Poppins',
+                color: FlutterFlowTheme.of(context).primaryText,
+                fontSize: 22,
+              ),
+        ),
+        actions: [],
+        centerTitle: false,
+        elevation: 2,
       ),
-      backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+      backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -104,15 +78,15 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: Color(0xFFDBE2E7),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(2, 2, 2, 2),
+                  Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        color: Color(0xFFDBE2E7),
+                        shape: BoxShape.circle,
+                      ),
                       child: AuthUserStreamWidget(
                         child: Container(
                           width: 90,
@@ -184,7 +158,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                       options: FFButtonOptions(
                         width: 130,
                         height: 40,
-                        color: FlutterFlowTheme.of(context).primaryBackground,
+                        color: FlutterFlowTheme.of(context).secondaryBackground,
                         textStyle: FlutterFlowTheme.of(context)
                             .bodyText1
                             .override(
