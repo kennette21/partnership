@@ -39,6 +39,31 @@ abstract class ProjectsRecord
       .get()
       .then((s) => serializers.deserializeWith(serializer, serializedData(s))!);
 
+  static ProjectsRecord fromAlgolia(AlgoliaObjectSnapshot snapshot) =>
+      ProjectsRecord(
+        (c) => c
+          ..description = snapshot.data['description']
+          ..title = snapshot.data['title']
+          ..founder = safeGet(() => toRef(snapshot.data['founder']))
+          ..keywords = safeGet(() => ListBuilder(snapshot.data['keywords']))
+          ..ffRef = ProjectsRecord.collection.doc(snapshot.objectID),
+      );
+
+  static Future<List<ProjectsRecord>> search(
+          {String? term,
+          FutureOr<LatLng>? location,
+          int? maxResults,
+          double? searchRadiusMeters}) =>
+      FFAlgoliaManager.instance
+          .algoliaQuery(
+            index: 'projects',
+            term: term,
+            maxResults: maxResults,
+            location: location,
+            searchRadiusMeters: searchRadiusMeters,
+          )
+          .then((r) => r.map(fromAlgolia).toList());
+
   ProjectsRecord._();
   factory ProjectsRecord([void Function(ProjectsRecordBuilder) updates]) =
       _$ProjectsRecord;

@@ -1,29 +1,32 @@
 import '../auth/auth_util.dart';
 import '../backend/backend.dart';
-import '../edit_profile/edit_profile_widget.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
-import '../flutter_flow/flutter_flow_widgets.dart';
-import '../login/login_widget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ProfileWidget extends StatefulWidget {
-  const ProfileWidget({Key? key}) : super(key: key);
+class ProfileViewWidget extends StatefulWidget {
+  const ProfileViewWidget({
+    Key? key,
+    this.user,
+  }) : super(key: key);
+
+  final DocumentReference? user;
 
   @override
-  _ProfileWidgetState createState() => _ProfileWidgetState();
+  _ProfileViewWidgetState createState() => _ProfileViewWidgetState();
 }
 
-class _ProfileWidgetState extends State<ProfileWidget> {
+class _ProfileViewWidgetState extends State<ProfileViewWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<UsersRecord>(
-      stream: UsersRecord.getDocument(currentUserReference!),
+      stream: UsersRecord.getDocument(widget.user!),
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
         if (!snapshot.hasData) {
@@ -37,9 +40,30 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             ),
           );
         }
-        final profileUsersRecord = snapshot.data!;
+        final profileViewUsersRecord = snapshot.data!;
         return Scaffold(
           key: scaffoldKey,
+          appBar: AppBar(
+            backgroundColor: FlutterFlowTheme.of(context).primaryColor,
+            automaticallyImplyLeading: false,
+            leading: FlutterFlowIconButton(
+              borderColor: Colors.transparent,
+              borderRadius: 30,
+              borderWidth: 1,
+              buttonSize: 60,
+              icon: Icon(
+                Icons.arrow_back_rounded,
+                color: Colors.white,
+                size: 30,
+              ),
+              onPressed: () async {
+                Navigator.pop(context);
+              },
+            ),
+            actions: [],
+            centerTitle: false,
+            elevation: 2,
+          ),
           backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
           body: SafeArea(
             child: GestureDetector(
@@ -51,52 +75,6 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          if (Theme.of(context).brightness == Brightness.dark)
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 20, 0),
-                              child: FlutterFlowIconButton(
-                                borderColor: Colors.transparent,
-                                borderRadius: 30,
-                                borderWidth: 1,
-                                buttonSize: 60,
-                                icon: Icon(
-                                  Icons.nightlight_round,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  size: 30,
-                                ),
-                                onPressed: () async {
-                                  setDarkModeSetting(context, ThemeMode.light);
-                                },
-                              ),
-                            ),
-                          if (Theme.of(context).brightness == Brightness.light)
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 20, 0),
-                              child: FlutterFlowIconButton(
-                                borderColor: Colors.transparent,
-                                borderRadius: 30,
-                                borderWidth: 1,
-                                buttonSize: 60,
-                                icon: Icon(
-                                  Icons.wb_sunny,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  size: 30,
-                                ),
-                                onPressed: () async {
-                                  setDarkModeSetting(context, ThemeMode.dark);
-                                },
-                              ),
-                            ),
-                        ],
-                      ),
                       Container(
                         width: 120,
                         height: 120,
@@ -105,12 +83,12 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                           shape: BoxShape.circle,
                         ),
                         child: Image.network(
-                          profileUsersRecord.photoUrl!,
+                          profileViewUsersRecord.photoUrl!,
                         ),
                       ),
                       Text(
                         valueOrDefault<String>(
-                          profileUsersRecord.displayName,
+                          profileViewUsersRecord.displayName,
                           'Anonymous Anteater',
                         ),
                         textAlign: TextAlign.center,
@@ -141,7 +119,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                           child: Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(4, 2, 4, 2),
                             child: Text(
-                              profileUsersRecord.bio!,
+                              profileViewUsersRecord.bio!,
                               style: FlutterFlowTheme.of(context)
                                   .bodyText1
                                   .override(
@@ -276,7 +254,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                               size: 30,
                             ),
                             onPressed: () async {
-                              await launchURL(profileUsersRecord.calendar!);
+                              await launchURL(profileViewUsersRecord.calendar!);
                             },
                           ),
                           FlutterFlowIconButton(
@@ -295,77 +273,6 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                             },
                           ),
                         ],
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 8, 0, 0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 0, 8),
-                              child: FFButtonWidget(
-                                onPressed: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditProfileWidget(),
-                                    ),
-                                  );
-                                },
-                                text: 'Edit Profile',
-                                options: FFButtonOptions(
-                                  width: 130,
-                                  height: 40,
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryColor,
-                                  textStyle: FlutterFlowTheme.of(context)
-                                      .subtitle2
-                                      .override(
-                                        fontFamily: 'Poppins',
-                                        color: Colors.white,
-                                      ),
-                                  borderSide: BorderSide(
-                                    color: Colors.transparent,
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                            FFButtonWidget(
-                              onPressed: () async {
-                                await signOut();
-                                await Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginWidget(),
-                                  ),
-                                  (r) => false,
-                                );
-                              },
-                              text: 'Logout',
-                              options: FFButtonOptions(
-                                width: 130,
-                                height: 40,
-                                color:
-                                    FlutterFlowTheme.of(context).primaryColor,
-                                textStyle: FlutterFlowTheme.of(context)
-                                    .subtitle2
-                                    .override(
-                                      fontFamily: 'Poppins',
-                                      color: Colors.white,
-                                    ),
-                                borderSide: BorderSide(
-                                  color: Colors.transparent,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
                     ],
                   ),

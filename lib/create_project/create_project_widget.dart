@@ -4,6 +4,7 @@ import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import '../main.dart';
+import '../flutter_flow/custom_functions.dart' as functions;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -24,6 +25,7 @@ class CreateProjectWidget extends StatefulWidget {
 class _CreateProjectWidgetState extends State<CreateProjectWidget> {
   TextEditingController? descriptionController;
   TextEditingController? titleController;
+  TextEditingController? keywordsController;
   double? addNewRatingBarValue;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -32,6 +34,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
     super.initState();
     descriptionController = TextEditingController();
     titleController = TextEditingController();
+    keywordsController = TextEditingController();
   }
 
   @override
@@ -60,18 +63,6 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.max,
             children: [
-              Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(8, 16, 0, 0),
-                child: Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    Text(
-                      'Details',
-                      style: FlutterFlowTheme.of(context).bodyText2,
-                    ),
-                  ],
-                ),
-              ),
               Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
                 child: TextFormField(
@@ -103,17 +94,57 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                   style: FlutterFlowTheme.of(context).bodyText1,
                 ),
               ),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 8),
+                  child: TextFormField(
+                    controller: descriptionController,
+                    obscureText: false,
+                    decoration: InputDecoration(
+                      labelText: 'Description',
+                      labelStyle:
+                          FlutterFlowTheme.of(context).bodyText2.override(
+                                fontFamily: 'Poppins',
+                                fontSize: 14,
+                              ),
+                      hintStyle: FlutterFlowTheme.of(context).bodyText2,
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: FlutterFlowTheme.of(context).primaryBackground,
+                          width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      filled: true,
+                      fillColor:
+                          FlutterFlowTheme.of(context).secondaryBackground,
+                      contentPadding:
+                          EdgeInsetsDirectional.fromSTEB(20, 24, 0, 24),
+                    ),
+                    style: FlutterFlowTheme.of(context).bodyText1.override(
+                          fontFamily: 'Poppins',
+                          fontSize: 12,
+                        ),
+                    maxLines: 1000,
+                    keyboardType: TextInputType.multiline,
+                  ),
+                ),
+              ),
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 8),
+                padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
                 child: TextFormField(
-                  controller: descriptionController,
+                  controller: keywordsController,
                   obscureText: false,
                   decoration: InputDecoration(
-                    labelText: 'Description',
-                    labelStyle: FlutterFlowTheme.of(context).bodyText2.override(
-                          fontFamily: 'Poppins',
-                          fontSize: 14,
-                        ),
+                    labelText: 'Keywords',
+                    labelStyle: FlutterFlowTheme.of(context).bodyText2,
                     hintStyle: FlutterFlowTheme.of(context).bodyText2,
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -134,10 +165,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                     contentPadding:
                         EdgeInsetsDirectional.fromSTEB(20, 24, 0, 24),
                   ),
-                  style: FlutterFlowTheme.of(context).bodyText1.override(
-                        fontFamily: 'Poppins',
-                        fontSize: 12,
-                      ),
+                  style: FlutterFlowTheme.of(context).bodyText1,
                 ),
               ),
               Padding(
@@ -234,10 +262,17 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                       padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 10),
                       child: FFButtonWidget(
                         onPressed: () async {
-                          final projectsUpdateData = createProjectsRecordData(
-                            description: descriptionController!.text,
-                            title: titleController!.text,
-                          );
+                          final projectsUpdateData = {
+                            ...createProjectsRecordData(
+                              description: descriptionController!.text,
+                              title: titleController!.text,
+                            ),
+                            'keywords': functions.getArrayFromKeywordString(
+                                valueOrDefault<String>(
+                              keywordsController!.text,
+                              'fun',
+                            )),
+                          };
                           await widget.projectRef!.update(projectsUpdateData);
                           await Navigator.push(
                             context,
