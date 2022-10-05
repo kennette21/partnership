@@ -36,11 +36,31 @@ class ApiCallRecord extends Equatable {
 }
 
 class ApiCallResponse {
-  const ApiCallResponse(this.jsonBody, this.statusCode);
+  const ApiCallResponse(this.jsonBody, this.headers, this.statusCode);
   final dynamic jsonBody;
+  final Map<String, String> headers;
   final int statusCode;
-  // Whether we recieved a 2xx status (which generally marks success).
+  // Whether we received a 2xx status (which generally marks success).
   bool get succeeded => statusCode >= 200 && statusCode < 300;
+  String getHeader(String headerName) => headers[headerName] ?? '';
+
+  static ApiCallResponse fromHttpResponse(
+    http.Response response,
+    bool returnBody,
+  ) {
+    var jsonBody;
+    try {
+      jsonBody = returnBody ? json.decode(response.body) : null;
+    } catch (_) {}
+    return ApiCallResponse(jsonBody, response.headers, response.statusCode);
+  }
+
+  static ApiCallResponse fromCloudCallResponse(Map<String, dynamic> response) =>
+      ApiCallResponse(
+        response['body'],
+        ApiManager.toStringMap(response['headers'] ?? {}),
+        response['statusCode'] ?? 400,
+      );
 }
 
 class ApiManager {
@@ -63,20 +83,11 @@ class ApiManager {
       .toSet()
       .forEach((k) => k.callName == callName ? _apiCache.remove(k) : null);
 
-  static Map<String, String> toStringMap(Map<String, dynamic> map) =>
-      map.map((key, value) => MapEntry(key, value.toString()));
+  static Map<String, String> toStringMap(Map map) =>
+      map.map((key, value) => MapEntry(key.toString(), value.toString()));
 
   static String asQueryParams(Map<String, dynamic> map) =>
       map.entries.map((e) => "${e.key}=${e.value}").join('&');
-
-  static ApiCallResponse createResponse(
-      http.Response response, bool returnBody) {
-    var jsonBody;
-    try {
-      jsonBody = returnBody ? json.decode(response.body) : null;
-    } catch (_) {}
-    return ApiCallResponse(jsonBody, response.statusCode);
-  }
 
   static Future<ApiCallResponse> urlRequest(
     ApiCallType callType,
@@ -94,7 +105,7 @@ class ApiManager {
     final makeRequest = callType == ApiCallType.GET ? http.get : http.delete;
     final response =
         await makeRequest(Uri.parse(apiUrl), headers: toStringMap(headers));
-    return createResponse(response, returnBody);
+    return ApiCallResponse.fromHttpResponse(response, returnBody);
   }
 
   static Future<ApiCallResponse> requestWithBody(
@@ -118,7 +129,7 @@ class ApiManager {
     }[type]!;
     final response = await requestFn(Uri.parse(apiUrl),
         headers: toStringMap(headers), body: postBody);
-    return createResponse(response, returnBody);
+    return ApiCallResponse.fromHttpResponse(response, returnBody);
   }
 
   static dynamic createBody(

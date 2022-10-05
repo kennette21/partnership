@@ -19,6 +19,13 @@ class SkilltagWidget extends StatefulWidget {
 
 class _SkilltagWidgetState extends State<SkilltagWidget> {
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsetsDirectional.fromSTEB(0, 0, 4, 4),

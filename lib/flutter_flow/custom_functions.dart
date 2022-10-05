@@ -14,3 +14,10 @@ List<String> getArrayFromKeywordString(String keywordString) {
   // Add your function code here!
   return keywordString.split(", ");
 }
+
+String? getStringFromKeywordArray(List<String>? keywordArray) {
+  if (keywordArray != null) {
+    return keywordArray.join(", ");
+  }
+  return null;
+}

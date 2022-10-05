@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:from_css_color/from_css_color.dart';
+
 import 'index.dart';
 import 'serializers.dart';
 import 'package:built_value/built_value.dart';
@@ -19,6 +21,8 @@ abstract class ProjectsRecord
 
   BuiltList<String>? get keywords;
 
+  String? get stream;
+
   @BuiltValueField(wireName: kDocumentReferenceField)
   DocumentReference? get ffRef;
   DocumentReference get reference => ffRef!;
@@ -26,7 +30,8 @@ abstract class ProjectsRecord
   static void _initializeBuilder(ProjectsRecordBuilder builder) => builder
     ..description = ''
     ..title = ''
-    ..keywords = ListBuilder();
+    ..keywords = ListBuilder()
+    ..stream = '';
 
   static CollectionReference get collection =>
       FirebaseFirestore.instance.collection('projects');
@@ -46,6 +51,7 @@ abstract class ProjectsRecord
           ..title = snapshot.data['title']
           ..founder = safeGet(() => toRef(snapshot.data['founder']))
           ..keywords = safeGet(() => ListBuilder(snapshot.data['keywords']))
+          ..stream = snapshot.data['stream']
           ..ffRef = ProjectsRecord.collection.doc(snapshot.objectID),
       );
 
@@ -78,6 +84,7 @@ Map<String, dynamic> createProjectsRecordData({
   String? description,
   String? title,
   DocumentReference? founder,
+  String? stream,
 }) {
   final firestoreData = serializers.toFirestore(
     ProjectsRecord.serializer,
@@ -86,7 +93,8 @@ Map<String, dynamic> createProjectsRecordData({
         ..description = description
         ..title = title
         ..founder = founder
-        ..keywords = null,
+        ..keywords = null
+        ..stream = stream,
     ),
   );
 
