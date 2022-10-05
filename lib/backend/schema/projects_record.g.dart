@@ -51,6 +51,13 @@ class _$ProjectsRecordSerializer
             specifiedType:
                 const FullType(BuiltList, const [const FullType(String)])));
     }
+    value = object.stream;
+    if (value != null) {
+      result
+        ..add('stream')
+        ..add(serializers.serialize(value,
+            specifiedType: const FullType(String)));
+    }
     value = object.ffRef;
     if (value != null) {
       result
@@ -94,6 +101,10 @@ class _$ProjectsRecordSerializer
                       BuiltList, const [const FullType(String)]))!
               as BuiltList<Object?>);
           break;
+        case 'stream':
+          result.stream = serializers.deserialize(value,
+              specifiedType: const FullType(String)) as String?;
+          break;
         case 'Document__Reference__Field':
           result.ffRef = serializers.deserialize(value,
               specifiedType: const FullType(DocumentReference, const [
@@ -117,13 +128,20 @@ class _$ProjectsRecord extends ProjectsRecord {
   @override
   final BuiltList<String>? keywords;
   @override
+  final String? stream;
+  @override
   final DocumentReference<Object?>? ffRef;
 
   factory _$ProjectsRecord([void Function(ProjectsRecordBuilder)? updates]) =>
       (new ProjectsRecordBuilder()..update(updates))._build();
 
   _$ProjectsRecord._(
-      {this.description, this.title, this.founder, this.keywords, this.ffRef})
+      {this.description,
+      this.title,
+      this.founder,
+      this.keywords,
+      this.stream,
+      this.ffRef})
       : super._();
 
   @override
@@ -142,6 +160,7 @@ class _$ProjectsRecord extends ProjectsRecord {
         title == other.title &&
         founder == other.founder &&
         keywords == other.keywords &&
+        stream == other.stream &&
         ffRef == other.ffRef;
   }
 
@@ -149,9 +168,11 @@ class _$ProjectsRecord extends ProjectsRecord {
   int get hashCode {
     return $jf($jc(
         $jc(
-            $jc($jc($jc(0, description.hashCode), title.hashCode),
-                founder.hashCode),
-            keywords.hashCode),
+            $jc(
+                $jc($jc($jc(0, description.hashCode), title.hashCode),
+                    founder.hashCode),
+                keywords.hashCode),
+            stream.hashCode),
         ffRef.hashCode));
   }
 
@@ -162,6 +183,7 @@ class _$ProjectsRecord extends ProjectsRecord {
           ..add('title', title)
           ..add('founder', founder)
           ..add('keywords', keywords)
+          ..add('stream', stream)
           ..add('ffRef', ffRef))
         .toString();
   }
@@ -188,6 +210,10 @@ class ProjectsRecordBuilder
       _$this._keywords ??= new ListBuilder<String>();
   set keywords(ListBuilder<String>? keywords) => _$this._keywords = keywords;
 
+  String? _stream;
+  String? get stream => _$this._stream;
+  set stream(String? stream) => _$this._stream = stream;
+
   DocumentReference<Object?>? _ffRef;
   DocumentReference<Object?>? get ffRef => _$this._ffRef;
   set ffRef(DocumentReference<Object?>? ffRef) => _$this._ffRef = ffRef;
@@ -203,6 +229,7 @@ class ProjectsRecordBuilder
       _title = $v.title;
       _founder = $v.founder;
       _keywords = $v.keywords?.toBuilder();
+      _stream = $v.stream;
       _ffRef = $v.ffRef;
       _$v = null;
     }
@@ -232,6 +259,7 @@ class ProjectsRecordBuilder
               title: title,
               founder: founder,
               keywords: _keywords?.build(),
+              stream: stream,
               ffRef: ffRef);
     } catch (_) {
       late String _$failedField;

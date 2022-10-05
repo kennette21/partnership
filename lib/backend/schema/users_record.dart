@@ -29,6 +29,8 @@ abstract class UsersRecord implements Built<UsersRecord, UsersRecordBuilder> {
 
   String? get calendar;
 
+  bool? get isFounder;
+
   @BuiltValueField(wireName: kDocumentReferenceField)
   DocumentReference? get ffRef;
   DocumentReference get reference => ffRef!;
@@ -40,7 +42,8 @@ abstract class UsersRecord implements Built<UsersRecord, UsersRecordBuilder> {
     ..uid = ''
     ..phoneNumber = ''
     ..bio = ''
-    ..calendar = '';
+    ..calendar = ''
+    ..isFounder = false;
 
   static CollectionReference get collection =>
       FirebaseFirestore.instance.collection('users');
@@ -72,6 +75,7 @@ Map<String, dynamic> createUsersRecordData({
   String? phoneNumber,
   String? bio,
   String? calendar,
+  bool? isFounder,
 }) {
   final firestoreData = serializers.toFirestore(
     UsersRecord.serializer,
@@ -84,7 +88,8 @@ Map<String, dynamic> createUsersRecordData({
         ..createdTime = createdTime
         ..phoneNumber = phoneNumber
         ..bio = bio
-        ..calendar = calendar,
+        ..calendar = calendar
+        ..isFounder = isFounder,
     ),
   );
 

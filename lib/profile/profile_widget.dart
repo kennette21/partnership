@@ -21,6 +21,13 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<UsersRecord>(
       stream: UsersRecord.getDocument(currentUserReference!),
@@ -38,342 +45,397 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           );
         }
         final profileUsersRecord = snapshot.data!;
-        return Scaffold(
-          key: scaffoldKey,
-          backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
-          body: SafeArea(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
+        return Title(
+            title: 'Profile',
+            color: FlutterFlowTheme.of(context).primaryColor,
+            child: Scaffold(
+              key: scaffoldKey,
+              backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
+              body: SafeArea(
+                child: GestureDetector(
+                  onTap: () => FocusScope.of(context).unfocus(),
+                  child: Padding(
+                    padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
+                    child: SingleChildScrollView(
+                      child: Column(
                         mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          if (Theme.of(context).brightness == Brightness.dark)
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 20, 0),
-                              child: FlutterFlowIconButton(
-                                borderColor: Colors.transparent,
-                                borderRadius: 30,
-                                borderWidth: 1,
-                                buttonSize: 60,
-                                icon: Icon(
-                                  Icons.nightlight_round,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  size: 30,
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              if (Theme.of(context).brightness ==
+                                  Brightness.dark)
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0, 0, 20, 0),
+                                  child: FlutterFlowIconButton(
+                                    borderColor: Colors.transparent,
+                                    borderRadius: 30,
+                                    borderWidth: 1,
+                                    buttonSize: 60,
+                                    icon: Icon(
+                                      Icons.nightlight_round,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                      size: 30,
+                                    ),
+                                    onPressed: () async {
+                                      setDarkModeSetting(
+                                          context, ThemeMode.light);
+                                    },
+                                  ),
                                 ),
-                                onPressed: () async {
-                                  setDarkModeSetting(context, ThemeMode.light);
-                                },
-                              ),
-                            ),
-                          if (Theme.of(context).brightness == Brightness.light)
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 20, 0),
-                              child: FlutterFlowIconButton(
-                                borderColor: Colors.transparent,
-                                borderRadius: 30,
-                                borderWidth: 1,
-                                buttonSize: 60,
-                                icon: Icon(
-                                  Icons.wb_sunny,
-                                  color:
-                                      FlutterFlowTheme.of(context).primaryText,
-                                  size: 30,
+                              if (Theme.of(context).brightness ==
+                                  Brightness.light)
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0, 0, 20, 0),
+                                  child: FlutterFlowIconButton(
+                                    borderColor: Colors.transparent,
+                                    borderRadius: 30,
+                                    borderWidth: 1,
+                                    buttonSize: 60,
+                                    icon: Icon(
+                                      Icons.wb_sunny,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryText,
+                                      size: 30,
+                                    ),
+                                    onPressed: () async {
+                                      setDarkModeSetting(
+                                          context, ThemeMode.dark);
+                                    },
+                                  ),
                                 ),
-                                onPressed: () async {
-                                  setDarkModeSetting(context, ThemeMode.dark);
-                                },
-                              ),
-                            ),
-                        ],
-                      ),
-                      Container(
-                        width: 120,
-                        height: 120,
-                        clipBehavior: Clip.antiAlias,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
-                        child: Image.network(
-                          profileUsersRecord.photoUrl!,
-                        ),
-                      ),
-                      Text(
-                        valueOrDefault<String>(
-                          profileUsersRecord.displayName,
-                          'Anonymous Anteater',
-                        ),
-                        textAlign: TextAlign.center,
-                        style: FlutterFlowTheme.of(context).title3,
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Text(
-                              'Bio',
-                              style: FlutterFlowTheme.of(context).bodyText2,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(4, 2, 4, 2),
-                        child: Container(
-                          width: double.infinity,
-                          height: 100,
-                          decoration: BoxDecoration(
-                            color: FlutterFlowTheme.of(context)
-                                .secondaryBackground,
-                            borderRadius: BorderRadius.circular(4),
+                            ],
                           ),
-                          child: Padding(
+                          Container(
+                            width: 120,
+                            height: 120,
+                            clipBehavior: Clip.antiAlias,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                            ),
+                            child: Image.network(
+                              profileUsersRecord.photoUrl!,
+                            ),
+                          ),
+                          Text(
+                            valueOrDefault<String>(
+                              profileUsersRecord.displayName,
+                              'Anonymous Anteater',
+                            ),
+                            textAlign: TextAlign.center,
+                            style: FlutterFlowTheme.of(context).title3,
+                          ),
+                          Padding(
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Text(
+                                  'Bio',
+                                  style: FlutterFlowTheme.of(context).bodyText2,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
                             padding: EdgeInsetsDirectional.fromSTEB(4, 2, 4, 2),
-                            child: Text(
-                              profileUsersRecord.bio!,
-                              style: FlutterFlowTheme.of(context)
-                                  .bodyText1
-                                  .override(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 12,
-                                  ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Text(
-                              'Skills',
-                              style: FlutterFlowTheme.of(context).bodyText2,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(4, 4, 4, 0),
-                        child: StreamBuilder<List<RatingsRecord>>(
-                          stream: queryRatingsRecord(
-                            queryBuilder: (ratingsRecord) => ratingsRecord
-                                .where('user', isEqualTo: currentUserReference),
-                          ),
-                          builder: (context, snapshot) {
-                            // Customize what your widget looks like when it's loading.
-                            if (!snapshot.hasData) {
-                              return Center(
-                                child: SizedBox(
-                                  width: 50,
-                                  height: 50,
-                                  child: CircularProgressIndicator(
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryColor,
-                                  ),
+                            child: Container(
+                              width: double.infinity,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: FlutterFlowTheme.of(context)
+                                    .secondaryBackground,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Padding(
+                                padding:
+                                    EdgeInsetsDirectional.fromSTEB(4, 2, 4, 2),
+                                child: Text(
+                                  profileUsersRecord.bio!,
+                                  style: FlutterFlowTheme.of(context)
+                                      .bodyText1
+                                      .override(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 12,
+                                      ),
                                 ),
-                              );
-                            }
-                            List<RatingsRecord>
-                                listViewSkillsRatingsRecordList =
-                                snapshot.data!;
-                            return ListView.builder(
-                              padding: EdgeInsets.zero,
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              itemCount: listViewSkillsRatingsRecordList.length,
-                              itemBuilder: (context, listViewSkillsIndex) {
-                                final listViewSkillsRatingsRecord =
-                                    listViewSkillsRatingsRecordList[
-                                        listViewSkillsIndex];
-                                return StreamBuilder<SkillsRecord>(
-                                  stream: SkillsRecord.getDocument(
-                                      listViewSkillsRatingsRecord.skill!),
-                                  builder: (context, snapshot) {
-                                    // Customize what your widget looks like when it's loading.
-                                    if (!snapshot.hasData) {
-                                      return Center(
-                                        child: SizedBox(
-                                          width: 50,
-                                          height: 50,
-                                          child: CircularProgressIndicator(
-                                            color: FlutterFlowTheme.of(context)
-                                                .primaryColor,
-                                          ),
-                                        ),
-                                      );
-                                    }
-                                    final rowSkillsRecord = snapshot.data!;
-                                    return Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          rowSkillsRecord.name!,
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyText1,
-                                        ),
-                                        RatingBarIndicator(
-                                          itemBuilder: (context, index) => Icon(
-                                            Icons.star_rounded,
-                                            color: FlutterFlowTheme.of(context)
-                                                .secondaryColor,
-                                          ),
-                                          direction: Axis.horizontal,
-                                          rating: listViewSkillsRatingsRecord
-                                              .value!
-                                              .toDouble(),
-                                          unratedColor: Color(0xFF9E9E9E),
-                                          itemCount: 3,
-                                          itemSize: 40,
-                                        ),
-                                      ],
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Text(
+                                  'Skills',
+                                  style: FlutterFlowTheme.of(context).bodyText2,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(4, 4, 4, 0),
+                            child: StreamBuilder<List<RatingsRecord>>(
+                              stream: queryRatingsRecord(
+                                queryBuilder: (ratingsRecord) =>
+                                    ratingsRecord.where('user',
+                                        isEqualTo: currentUserReference),
+                              ),
+                              builder: (context, snapshot) {
+                                // Customize what your widget looks like when it's loading.
+                                if (!snapshot.hasData) {
+                                  return Center(
+                                    child: SizedBox(
+                                      width: 50,
+                                      height: 50,
+                                      child: CircularProgressIndicator(
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryColor,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                List<RatingsRecord>
+                                    listViewSkillsRatingsRecordList =
+                                    snapshot.data!;
+                                return ListView.builder(
+                                  padding: EdgeInsets.zero,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.vertical,
+                                  itemCount:
+                                      listViewSkillsRatingsRecordList.length,
+                                  itemBuilder: (context, listViewSkillsIndex) {
+                                    final listViewSkillsRatingsRecord =
+                                        listViewSkillsRatingsRecordList[
+                                            listViewSkillsIndex];
+                                    return StreamBuilder<SkillsRecord>(
+                                      stream: SkillsRecord.getDocument(
+                                          listViewSkillsRatingsRecord.skill!),
+                                      builder: (context, snapshot) {
+                                        // Customize what your widget looks like when it's loading.
+                                        if (!snapshot.hasData) {
+                                          return Center(
+                                            child: SizedBox(
+                                              width: 50,
+                                              height: 50,
+                                              child: CircularProgressIndicator(
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .primaryColor,
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                        final rowSkillsRecord = snapshot.data!;
+                                        return Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              rowSkillsRecord.name!,
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyText1,
+                                            ),
+                                            RatingBarIndicator(
+                                              itemBuilder: (context, index) =>
+                                                  Icon(
+                                                Icons.star_rounded,
+                                                color:
+                                                    FlutterFlowTheme.of(context)
+                                                        .secondaryColor,
+                                              ),
+                                              direction: Axis.horizontal,
+                                              rating:
+                                                  listViewSkillsRatingsRecord
+                                                      .value!
+                                                      .toDouble(),
+                                              unratedColor: Color(0xFF9E9E9E),
+                                              itemCount: 3,
+                                              itemSize: 40,
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     );
                                   },
                                 );
                               },
-                            );
-                          },
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            Text(
-                              'Contact',
-                              style: FlutterFlowTheme.of(context).bodyText2,
                             ),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          FlutterFlowIconButton(
-                            borderColor:
-                                FlutterFlowTheme.of(context).primaryText,
-                            borderRadius: 30,
-                            borderWidth: 3,
-                            buttonSize: 60,
-                            icon: Icon(
-                              Icons.event,
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              size: 30,
-                            ),
-                            onPressed: () async {
-                              await launchURL(profileUsersRecord.calendar!);
-                            },
                           ),
-                          FlutterFlowIconButton(
-                            borderColor:
-                                FlutterFlowTheme.of(context).primaryText,
-                            borderRadius: 30,
-                            borderWidth: 3,
-                            buttonSize: 60,
-                            icon: Icon(
-                              Icons.mail_outlined,
-                              color: FlutterFlowTheme.of(context).primaryText,
-                              size: 30,
+                          Padding(
+                            padding:
+                                EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                Text(
+                                  'Contact',
+                                  style: FlutterFlowTheme.of(context).bodyText2,
+                                ),
+                              ],
                             ),
-                            onPressed: () {
-                              print('EmailButton pressed ...');
-                            },
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              FlutterFlowIconButton(
+                                borderColor:
+                                    FlutterFlowTheme.of(context).primaryText,
+                                borderRadius: 30,
+                                borderWidth: 3,
+                                buttonSize: 60,
+                                icon: Icon(
+                                  Icons.event,
+                                  color:
+                                      FlutterFlowTheme.of(context).primaryText,
+                                  size: 30,
+                                ),
+                                onPressed: () async {
+                                  await launchURL(profileUsersRecord.calendar!);
+                                },
+                              ),
+                              FlutterFlowIconButton(
+                                borderColor:
+                                    FlutterFlowTheme.of(context).primaryText,
+                                borderRadius: 30,
+                                borderWidth: 3,
+                                buttonSize: 60,
+                                icon: Icon(
+                                  Icons.mail_outlined,
+                                  color:
+                                      FlutterFlowTheme.of(context).primaryText,
+                                  size: 30,
+                                ),
+                                onPressed: () {
+                                  print('EmailButton pressed ...');
+                                },
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(0, 8, 0, 0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                if (!valueOrDefault<bool>(
+                                    currentUserDocument?.isFounder, false))
+                                  Padding(
+                                    padding: EdgeInsetsDirectional.fromSTEB(
+                                        0, 0, 0, 8),
+                                    child: AuthUserStreamWidget(
+                                      child: FFButtonWidget(
+                                        onPressed: () async {
+                                          await launchURL(
+                                              'https://docs.google.com/forms/d/e/1FAIpQLSdYpCgpIC7tzy8ziUxZ45aw_Z9OlJlymeh_SLA_7vaRla0tlQ/viewform?usp=sf_link');
+                                        },
+                                        text: 'Be a Founder',
+                                        options: FFButtonOptions(
+                                          width: 130,
+                                          height: 40,
+                                          color: FlutterFlowTheme.of(context)
+                                              .secondaryColor,
+                                          textStyle:
+                                              FlutterFlowTheme.of(context)
+                                                  .subtitle2
+                                                  .override(
+                                                    fontFamily: 'Poppins',
+                                                    color: Colors.white,
+                                                  ),
+                                          borderSide: BorderSide(
+                                            color: Colors.transparent,
+                                            width: 1,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      0, 0, 0, 8),
+                                  child: FFButtonWidget(
+                                    onPressed: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              EditProfileWidget(),
+                                        ),
+                                      );
+                                    },
+                                    text: 'Edit Profile',
+                                    options: FFButtonOptions(
+                                      width: 130,
+                                      height: 40,
+                                      color: FlutterFlowTheme.of(context)
+                                          .secondaryColor,
+                                      textStyle: FlutterFlowTheme.of(context)
+                                          .subtitle2
+                                          .override(
+                                            fontFamily: 'Poppins',
+                                            color: Colors.white,
+                                          ),
+                                      borderSide: BorderSide(
+                                        color: Colors.transparent,
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                ),
+                                FFButtonWidget(
+                                  onPressed: () async {
+                                    await signOut();
+                                    await Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => LoginWidget(),
+                                      ),
+                                      (r) => false,
+                                    );
+                                  },
+                                  text: 'Logout',
+                                  options: FFButtonOptions(
+                                    width: 130,
+                                    height: 40,
+                                    color: FlutterFlowTheme.of(context)
+                                        .primaryColor,
+                                    textStyle: FlutterFlowTheme.of(context)
+                                        .subtitle2
+                                        .override(
+                                          fontFamily: 'Poppins',
+                                          color: Colors.white,
+                                        ),
+                                    borderSide: BorderSide(
+                                      color: Colors.transparent,
+                                      width: 1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
-                      Padding(
-                        padding: EdgeInsetsDirectional.fromSTEB(0, 8, 0, 0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding:
-                                  EdgeInsetsDirectional.fromSTEB(0, 0, 0, 8),
-                              child: FFButtonWidget(
-                                onPressed: () async {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => EditProfileWidget(),
-                                    ),
-                                  );
-                                },
-                                text: 'Edit Profile',
-                                options: FFButtonOptions(
-                                  width: 130,
-                                  height: 40,
-                                  color: FlutterFlowTheme.of(context)
-                                      .secondaryColor,
-                                  textStyle: FlutterFlowTheme.of(context)
-                                      .subtitle2
-                                      .override(
-                                        fontFamily: 'Poppins',
-                                        color: Colors.white,
-                                      ),
-                                  borderSide: BorderSide(
-                                    color: Colors.transparent,
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                            FFButtonWidget(
-                              onPressed: () async {
-                                await signOut();
-                                await Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginWidget(),
-                                  ),
-                                  (r) => false,
-                                );
-                              },
-                              text: 'Logout',
-                              options: FFButtonOptions(
-                                width: 130,
-                                height: 40,
-                                color:
-                                    FlutterFlowTheme.of(context).primaryColor,
-                                textStyle: FlutterFlowTheme.of(context)
-                                    .subtitle2
-                                    .override(
-                                      fontFamily: 'Poppins',
-                                      color: Colors.white,
-                                    ),
-                                borderSide: BorderSide(
-                                  color: Colors.transparent,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

@@ -75,6 +75,13 @@ class _$UsersRecordSerializer implements StructuredSerializer<UsersRecord> {
         ..add(serializers.serialize(value,
             specifiedType: const FullType(String)));
     }
+    value = object.isFounder;
+    if (value != null) {
+      result
+        ..add('isFounder')
+        ..add(
+            serializers.serialize(value, specifiedType: const FullType(bool)));
+    }
     value = object.ffRef;
     if (value != null) {
       result
@@ -129,6 +136,10 @@ class _$UsersRecordSerializer implements StructuredSerializer<UsersRecord> {
           result.calendar = serializers.deserialize(value,
               specifiedType: const FullType(String)) as String?;
           break;
+        case 'isFounder':
+          result.isFounder = serializers.deserialize(value,
+              specifiedType: const FullType(bool)) as bool?;
+          break;
         case 'Document__Reference__Field':
           result.ffRef = serializers.deserialize(value,
               specifiedType: const FullType(DocumentReference, const [
@@ -160,6 +171,8 @@ class _$UsersRecord extends UsersRecord {
   @override
   final String? calendar;
   @override
+  final bool? isFounder;
+  @override
   final DocumentReference<Object?>? ffRef;
 
   factory _$UsersRecord([void Function(UsersRecordBuilder)? updates]) =>
@@ -174,6 +187,7 @@ class _$UsersRecord extends UsersRecord {
       this.phoneNumber,
       this.bio,
       this.calendar,
+      this.isFounder,
       this.ffRef})
       : super._();
 
@@ -196,6 +210,7 @@ class _$UsersRecord extends UsersRecord {
         phoneNumber == other.phoneNumber &&
         bio == other.bio &&
         calendar == other.calendar &&
+        isFounder == other.isFounder &&
         ffRef == other.ffRef;
   }
 
@@ -208,14 +223,16 @@ class _$UsersRecord extends UsersRecord {
                     $jc(
                         $jc(
                             $jc(
-                                $jc($jc(0, email.hashCode),
-                                    displayName.hashCode),
-                                photoUrl.hashCode),
-                            uid.hashCode),
-                        createdTime.hashCode),
-                    phoneNumber.hashCode),
-                bio.hashCode),
-            calendar.hashCode),
+                                $jc(
+                                    $jc($jc(0, email.hashCode),
+                                        displayName.hashCode),
+                                    photoUrl.hashCode),
+                                uid.hashCode),
+                            createdTime.hashCode),
+                        phoneNumber.hashCode),
+                    bio.hashCode),
+                calendar.hashCode),
+            isFounder.hashCode),
         ffRef.hashCode));
   }
 
@@ -230,6 +247,7 @@ class _$UsersRecord extends UsersRecord {
           ..add('phoneNumber', phoneNumber)
           ..add('bio', bio)
           ..add('calendar', calendar)
+          ..add('isFounder', isFounder)
           ..add('ffRef', ffRef))
         .toString();
   }
@@ -270,6 +288,10 @@ class UsersRecordBuilder implements Builder<UsersRecord, UsersRecordBuilder> {
   String? get calendar => _$this._calendar;
   set calendar(String? calendar) => _$this._calendar = calendar;
 
+  bool? _isFounder;
+  bool? get isFounder => _$this._isFounder;
+  set isFounder(bool? isFounder) => _$this._isFounder = isFounder;
+
   DocumentReference<Object?>? _ffRef;
   DocumentReference<Object?>? get ffRef => _$this._ffRef;
   set ffRef(DocumentReference<Object?>? ffRef) => _$this._ffRef = ffRef;
@@ -289,6 +311,7 @@ class UsersRecordBuilder implements Builder<UsersRecord, UsersRecordBuilder> {
       _phoneNumber = $v.phoneNumber;
       _bio = $v.bio;
       _calendar = $v.calendar;
+      _isFounder = $v.isFounder;
       _ffRef = $v.ffRef;
       _$v = null;
     }
@@ -320,6 +343,7 @@ class UsersRecordBuilder implements Builder<UsersRecord, UsersRecordBuilder> {
             phoneNumber: phoneNumber,
             bio: bio,
             calendar: calendar,
+            isFounder: isFounder,
             ffRef: ffRef);
     replace(_$result);
     return _$result;

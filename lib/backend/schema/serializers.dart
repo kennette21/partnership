@@ -1,9 +1,12 @@
 import 'package:built_value/standard_json_plugin.dart';
+import 'package:from_css_color/from_css_color.dart';
 
 import 'users_record.dart';
 import 'projects_record.dart';
 import 'skills_record.dart';
 import 'ratings_record.dart';
+import 'subscriptions_record.dart';
+import 'following_record.dart';
 
 import 'index.dart';
 
@@ -19,12 +22,15 @@ const kDocumentReferenceField = 'Document__Reference__Field';
   ProjectsRecord,
   SkillsRecord,
   RatingsRecord,
+  SubscriptionsRecord,
+  FollowingRecord,
 ])
 final Serializers serializers = (_$serializers.toBuilder()
       ..add(DocumentReferenceSerializer())
       ..add(DateTimeSerializer())
       ..add(LatLngSerializer())
       ..add(FirestoreUtilDataSerializer())
+      ..add(ColorSerializer())
       ..addPlugin(StandardJsonPlugin()))
     .build();
 
@@ -122,6 +128,24 @@ class FirestoreUtilDataSerializer
   FirestoreUtilData deserialize(Serializers serializers, Object serialized,
           {FullType specifiedType: FullType.unspecified}) =>
       serialized as FirestoreUtilData;
+}
+
+class ColorSerializer implements PrimitiveSerializer<Color> {
+  @override
+  final Iterable<Type> types = new BuiltList<Type>([Color]);
+  @override
+  final String wireName = 'Color';
+
+  @override
+  Object serialize(Serializers serializers, Color color,
+      {FullType specifiedType: FullType.unspecified}) {
+    return color.toCssString();
+  }
+
+  @override
+  Color deserialize(Serializers serializers, Object serialized,
+          {FullType specifiedType: FullType.unspecified}) =>
+      fromCssColor(serialized as String);
 }
 
 Map<String, dynamic> serializedData(DocumentSnapshot doc) => {
