@@ -771,7 +771,10 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                                                         final partnerTypes = functions
                                                                             .getPartnerTypesFromRatings(
                                                                                 listViewSkillsRatingsRecord.value!,
-                                                                                columnRatingsRecord!.value,
+                                                                                valueOrDefault<int>(
+                                                                                  columnRatingsRecord != null ? columnRatingsRecord!.value : 0,
+                                                                                  0,
+                                                                                ),
                                                                                 containerRatingsRecord!.value)
                                                                             .toList();
                                                                         return Wrap(
