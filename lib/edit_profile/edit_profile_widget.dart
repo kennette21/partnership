@@ -19,7 +19,9 @@ class EditProfileWidget extends StatefulWidget {
 }
 
 class _EditProfileWidgetState extends State<EditProfileWidget> {
+  bool isMediaUploading = false;
   String uploadedFileUrl = '';
+
   TextEditingController? displayNameController;
   TextEditingController? bioController;
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -30,6 +32,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
     bioController = TextEditingController(
         text: valueOrDefault(currentUserDocument?.bio, ''));
     displayNameController = TextEditingController(text: currentUserDisplayName);
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'EditProfile'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -62,11 +65,15 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                 size: 30,
               ),
               onPressed: () async {
+                logFirebaseEvent('EDIT_PROFILE_arrow_back_rounded_ICN_ON_T');
+                logFirebaseEvent('IconButton_Backend-Call');
+
                 final usersUpdateData = createUsersRecordData(
                   bio: bioController!.text,
                   displayName: displayNameController!.text,
                 );
                 await currentUserReference!.update(usersUpdateData);
+                logFirebaseEvent('IconButton_Navigate-Back');
                 Navigator.pop(context);
               },
             ),
@@ -126,6 +133,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                       children: [
                         FFButtonWidget(
                           onPressed: () async {
+                            logFirebaseEvent(
+                                'EDIT_PROFILE_CHANGE_PHOTO_BTN_ON_TAP');
+                            logFirebaseEvent('Button_Upload-Photo-Video');
                             final selectedMedia =
                                 await selectMediaWithSourceBottomSheet(
                               context: context,
@@ -134,35 +144,41 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                             if (selectedMedia != null &&
                                 selectedMedia.every((m) => validateFileFormat(
                                     m.storagePath, context))) {
-                              showUploadMessage(
-                                context,
-                                'Uploading file...',
-                                showLoading: true,
-                              );
-                              final downloadUrls = (await Future.wait(
-                                      selectedMedia.map((m) async =>
-                                          await uploadData(
-                                              m.storagePath, m.bytes))))
-                                  .where((u) => u != null)
-                                  .map((u) => u!)
-                                  .toList();
-                              ScaffoldMessenger.of(context)
-                                  .hideCurrentSnackBar();
+                              setState(() => isMediaUploading = true);
+                              var downloadUrls = <String>[];
+                              try {
+                                showUploadMessage(
+                                  context,
+                                  'Uploading file...',
+                                  showLoading: true,
+                                );
+                                downloadUrls = (await Future.wait(
+                                  selectedMedia.map(
+                                    (m) async => await uploadData(
+                                        m.storagePath, m.bytes),
+                                  ),
+                                ))
+                                    .where((u) => u != null)
+                                    .map((u) => u!)
+                                    .toList();
+                              } finally {
+                                ScaffoldMessenger.of(context)
+                                    .hideCurrentSnackBar();
+                                isMediaUploading = false;
+                              }
                               if (downloadUrls.length == selectedMedia.length) {
                                 setState(
                                     () => uploadedFileUrl = downloadUrls.first);
-                                showUploadMessage(
-                                  context,
-                                  'Success!',
-                                );
+                                showUploadMessage(context, 'Success!');
                               } else {
+                                setState(() {});
                                 showUploadMessage(
-                                  context,
-                                  'Failed to upload media',
-                                );
+                                    context, 'Failed to upload media');
                                 return;
                               }
                             }
+
+                            logFirebaseEvent('Button_Backend-Call');
 
                             final usersUpdateData = createUsersRecordData(
                               photoUrl: uploadedFileUrl,
@@ -357,6 +373,9 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                       child: AuthUserStreamWidget(
                         child: FFButtonWidget(
                           onPressed: () async {
+                            logFirebaseEvent(
+                                'EDIT_PROFILE_BECOME_A_FOUNDER_BTN_ON_TAP');
+                            logFirebaseEvent('Button_Launch-U-R-L');
                             await launchURL(
                                 'https://docs.google.com/forms/d/e/1FAIpQLSdYpCgpIC7tzy8ziUxZ45aw_Z9OlJlymeh_SLA_7vaRla0tlQ/viewform?usp=sf_link');
                           },

@@ -1,5 +1,6 @@
 import '../auth/auth_util.dart';
 import '../backend/backend.dart';
+import '../components/edit_profile_prompt_widget.dart';
 import '../create_project/create_project_widget.dart';
 import '../flutter_flow/flutter_flow_choice_chips.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
@@ -9,6 +10,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class BrowseWidget extends StatefulWidget {
@@ -28,6 +30,31 @@ class _BrowseWidgetState extends State<BrowseWidget> {
   @override
   void initState() {
     super.initState();
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      logFirebaseEvent('BROWSE_PAGE_Browse_ON_PAGE_LOAD');
+      if (valueOrDefault(currentUserDocument?.bio, '') == null ||
+          valueOrDefault(currentUserDocument?.bio, '') == '') {
+        logFirebaseEvent('Browse_Bottom-Sheet');
+        await showModalBottomSheet(
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          context: context,
+          builder: (context) {
+            return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: EditProfilePromptWidget(),
+            );
+          },
+        ).then((value) => setState(() {}));
+
+        return;
+      } else {
+        return;
+      }
+    });
+
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'Browse'});
     searchFieldController = TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
@@ -52,6 +79,9 @@ class _BrowseWidgetState extends State<BrowseWidget> {
             child: AuthUserStreamWidget(
               child: FloatingActionButton(
                 onPressed: () async {
+                  logFirebaseEvent('BROWSE_FloatingActionButton_i6jsit4h_ON_');
+                  logFirebaseEvent('FloatingActionButton_Backend-Call');
+
                   final projectsCreateData = createProjectsRecordData(
                     founder: currentUserReference,
                   );
@@ -59,6 +89,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                   await projectsRecordReference.set(projectsCreateData);
                   newProjectRef = ProjectsRecord.getDocumentFromData(
                       projectsCreateData, projectsRecordReference);
+                  logFirebaseEvent('FloatingActionButton_Navigate-To');
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -339,6 +370,9 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                   EdgeInsetsDirectional.fromSTEB(4, 0, 4, 6),
                               child: InkWell(
                                 onTap: () async {
+                                  logFirebaseEvent(
+                                      'BROWSE_PAGE_ProjectCar_ON_TAP');
+                                  logFirebaseEvent('ProjectCar_Navigate-To');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -690,6 +724,10 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                         }
                         return RefreshIndicator(
                           onRefresh: () async {
+                            logFirebaseEvent(
+                                'BROWSE_Row-SearchProjects_ON_PULL_TO_REF');
+                            logFirebaseEvent(
+                                'Row-SearchProjects_Refresh-Database-Requ');
                             setState(() => _algoliaRequestCompleter = null);
                             await waitForAlgoliaRequestCompleter();
                           },
@@ -709,6 +747,9 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                     EdgeInsetsDirectional.fromSTEB(4, 0, 4, 6),
                                 child: InkWell(
                                   onTap: () async {
+                                    logFirebaseEvent(
+                                        'BROWSE_PAGE_ProjectCar_ON_TAP');
+                                    logFirebaseEvent('ProjectCar_Navigate-To');
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(

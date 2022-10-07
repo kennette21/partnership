@@ -40,6 +40,7 @@ class _LoginWidgetState extends State<LoginWidget> {
     emailAddressLoginController = TextEditingController();
     passwordLoginController = TextEditingController();
     passwordLoginVisibility = false;
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'Login'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -312,6 +313,11 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   0, 24, 0, 0),
                                           child: FFButtonWidget(
                                             onPressed: () async {
+                                              logFirebaseEvent(
+                                                  'LOGIN_PAGE_Button-Login_ON_TAP');
+                                              logFirebaseEvent(
+                                                  'Button-Login_Auth');
+
                                               final user =
                                                   await signInWithEmail(
                                                 context,
@@ -402,6 +408,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             children: [
                                               InkWell(
                                                 onTap: () async {
+                                                  logFirebaseEvent(
+                                                      'LOGIN_PAGE_Container_rhpyfgjx_ON_TAP');
+                                                  logFirebaseEvent(
+                                                      'Container_Auth');
                                                   final user =
                                                       await signInWithGoogle(
                                                           context);
@@ -447,6 +457,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               ),
                                               InkWell(
                                                 onTap: () async {
+                                                  logFirebaseEvent(
+                                                      'LOGIN_PAGE_Container_vfkpvc68_ON_TAP');
+                                                  logFirebaseEvent(
+                                                      'Container_Auth');
                                                   final user =
                                                       await signInWithApple(
                                                           context);
@@ -783,6 +797,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   0, 24, 0, 0),
                                           child: FFButtonWidget(
                                             onPressed: () async {
+                                              logFirebaseEvent(
+                                                  'LOGIN_PAGE_CREATE_ACCOUNT_BTN_ON_TAP');
+                                              logFirebaseEvent('Button_Auth');
                                               if (passwordController?.text !=
                                                   passwordConfirmController
                                                       ?.text) {
@@ -888,6 +905,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             children: [
                                               InkWell(
                                                 onTap: () async {
+                                                  logFirebaseEvent(
+                                                      'LOGIN_PAGE_Container_5havjnmt_ON_TAP');
+                                                  logFirebaseEvent(
+                                                      'Container_Auth');
                                                   final user =
                                                       await signInWithGoogle(
                                                           context);

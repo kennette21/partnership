@@ -26,7 +26,7 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
   @override
   void initState() {
     super.initState();
-
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'ProfileView'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -68,6 +68,9 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                     size: 30,
                   ),
                   onPressed: () async {
+                    logFirebaseEvent(
+                        'PROFILE_VIEW_arrow_back_rounded_ICN_ON_T');
+                    logFirebaseEvent('IconButton_Navigate-Back');
                     Navigator.pop(context);
                   },
                 ),
@@ -277,6 +280,10 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                                   size: 30,
                                 ),
                                 onPressed: () async {
+                                  logFirebaseEvent(
+                                      'PROFILE_VIEW_PAGE_CalendlyButton_ON_TAP');
+                                  logFirebaseEvent(
+                                      'CalendlyButton_Launch-U-R-L');
                                   await launchURL(
                                       profileViewUsersRecord.calendar!);
                                 },

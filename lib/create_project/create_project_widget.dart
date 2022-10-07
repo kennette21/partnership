@@ -33,7 +33,8 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
   @override
   void initState() {
     super.initState();
-
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'CreateProject'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -295,6 +296,10 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
                               child: InkWell(
                                 onTap: () async {
+                                  logFirebaseEvent(
+                                      'CREATE_PROJECT_StreamJustification_ON_TA');
+                                  logFirebaseEvent(
+                                      'StreamJustification_Navigate-To');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -427,8 +432,12 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(0, 12, 0, 6),
                               child: FFButtonWidget(
                                 onPressed: () async {
+                                  logFirebaseEvent(
+                                      'CREATE_PROJECT_PAGE_DELETE_BTN_ON_TAP');
+                                  logFirebaseEvent('Button_Backend-Call');
                                   await createProjectProjectsRecord.reference
                                       .delete();
+                                  logFirebaseEvent('Button_Navigate-To');
                                   await Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
@@ -462,6 +471,10 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(20, 0, 20, 10),
                               child: FFButtonWidget(
                                 onPressed: () async {
+                                  logFirebaseEvent(
+                                      'CREATE_PROJECT_PAGE_DoneButton_ON_TAP');
+                                  logFirebaseEvent('DoneButton_Backend-Call');
+
                                   final projectsUpdateData = {
                                     ...createProjectsRecordData(
                                       description:
@@ -478,6 +491,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   };
                                   await widget.projectRef!
                                       .update(projectsUpdateData);
+                                  logFirebaseEvent('DoneButton_Navigate-To');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(

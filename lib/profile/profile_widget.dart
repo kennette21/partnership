@@ -23,7 +23,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
   @override
   void initState() {
     super.initState();
-
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'Profile'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -82,6 +82,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                       size: 30,
                                     ),
                                     onPressed: () async {
+                                      logFirebaseEvent(
+                                          'PROFILE_PAGE_DarkIcon_ON_TAP');
+                                      logFirebaseEvent(
+                                          'DarkIcon_Set-Dark-Mode-Settings');
                                       setDarkModeSetting(
                                           context, ThemeMode.light);
                                     },
@@ -104,6 +108,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                       size: 30,
                                     ),
                                     onPressed: () async {
+                                      logFirebaseEvent(
+                                          'PROFILE_PAGE_LightIcon_ON_TAP');
+                                      logFirebaseEvent(
+                                          'LightIcon_Set-Dark-Mode-Settings');
                                       setDarkModeSetting(
                                           context, ThemeMode.dark);
                                     },
@@ -302,6 +310,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                   size: 30,
                                 ),
                                 onPressed: () async {
+                                  logFirebaseEvent(
+                                      'PROFILE_PAGE_CalendlyButton_ON_TAP');
+                                  logFirebaseEvent(
+                                      'CalendlyButton_Launch-U-R-L');
                                   await launchURL(profileUsersRecord.calendar!);
                                 },
                               ),
@@ -337,6 +349,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                     child: AuthUserStreamWidget(
                                       child: FFButtonWidget(
                                         onPressed: () async {
+                                          logFirebaseEvent(
+                                              'PROFILE_PAGE_BecomeFounder_ON_TAP');
+                                          logFirebaseEvent(
+                                              'BecomeFounder_Launch-U-R-L');
                                           await launchURL(
                                               'https://docs.google.com/forms/d/e/1FAIpQLSdYpCgpIC7tzy8ziUxZ45aw_Z9OlJlymeh_SLA_7vaRla0tlQ/viewform?usp=sf_link');
                                         },
@@ -368,6 +384,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                       0, 0, 0, 8),
                                   child: FFButtonWidget(
                                     onPressed: () async {
+                                      logFirebaseEvent(
+                                          'PROFILE_PAGE_EditProfileButton_ON_TAP');
+                                      logFirebaseEvent(
+                                          'EditProfileButton_Navigate-To');
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -398,6 +418,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                 ),
                                 FFButtonWidget(
                                   onPressed: () async {
+                                    logFirebaseEvent(
+                                        'PROFILE_PAGE_LogoutButton_ON_TAP');
+                                    logFirebaseEvent('LogoutButton_Auth');
                                     await signOut();
                                     await Navigator.pushAndRemoveUntil(
                                       context,

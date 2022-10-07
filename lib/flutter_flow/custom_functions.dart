@@ -21,3 +21,33 @@ String? getStringFromKeywordArray(List<String>? keywordArray) {
   }
   return null;
 }
+
+List<String> getPartnerTypesFromRatings(
+  int projectRating,
+  int? userRating,
+  int? founderRating,
+) {
+  if (userRating == 0 || userRating == null) {
+    return ["mentee", "grow"];
+  } else if (founderRating == 0 || founderRating == null) {
+    if (userRating > 1) {
+      return ["contribute", "mentor"];
+    } else {
+      return ["contribute", "grow together"];
+    }
+  } else if (userRating == projectRating && userRating == founderRating) {
+    return ["contribute", "grow"];
+  } else if (userRating < projectRating && userRating < founderRating) {
+    return ["grow", "mentee"];
+  } else if (userRating < projectRating && userRating >= founderRating) {
+    return ["contribute", "grow together", "grow"];
+  } else if (userRating == projectRating && userRating < founderRating) {
+    return ["grow"];
+  } else if (userRating > projectRating && userRating < founderRating) {
+    return ["contribute"];
+  } else if (userRating >= projectRating && userRating > founderRating) {
+    return ["contribute", "mentor"];
+  } else {
+    return ["contribute", "grow", "?"];
+  }
+}

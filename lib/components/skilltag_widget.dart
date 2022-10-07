@@ -38,6 +38,7 @@ class _SkilltagWidgetState extends State<SkilltagWidget> {
           padding: EdgeInsetsDirectional.fromSTEB(4, 2, 4, 2),
           child: Text(
             widget.value!,
+            textAlign: TextAlign.center,
             style: FlutterFlowTheme.of(context).bodyText2.override(
                   fontFamily: 'Poppins',
                   color: FlutterFlowTheme.of(context).tertiaryColor,

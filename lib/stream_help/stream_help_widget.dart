@@ -17,7 +17,7 @@ class _StreamHelpWidgetState extends State<StreamHelpWidget> {
   @override
   void initState() {
     super.initState();
-
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'StreamHelp'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
@@ -43,6 +43,8 @@ class _StreamHelpWidgetState extends State<StreamHelpWidget> {
                 size: 30,
               ),
               onPressed: () async {
+                logFirebaseEvent('STREAM_HELP_arrow_back_rounded_ICN_ON_TA');
+                logFirebaseEvent('IconButton_Navigate-Back');
                 Navigator.pop(context);
               },
             ),
