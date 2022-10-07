@@ -734,9 +734,14 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                                                       ),
                                                                       direction:
                                                                           Axis.horizontal,
-                                                                      rating: columnRatingsRecord!
-                                                                          .value!
-                                                                          .toDouble(),
+                                                                      rating: valueOrDefault<
+                                                                          double>(
+                                                                        columnRatingsRecord !=
+                                                                                null
+                                                                            ? columnRatingsRecord!.value?.toDouble()
+                                                                            : 0.0,
+                                                                        0.0,
+                                                                      ),
                                                                       unratedColor:
                                                                           Color(
                                                                               0xFF9E9E9E),
