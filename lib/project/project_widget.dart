@@ -255,14 +255,10 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
                           ),
-                          child: Container(
+                          child: custom_widgets.MarkdownRenderer(
                             width: double.infinity,
                             height: 500,
-                            child: custom_widgets.MarkdownRenderer(
-                              width: double.infinity,
-                              height: 500,
-                              data: projectProjectsRecord.description!,
-                            ),
+                            data: projectProjectsRecord.description!,
                           ),
                         ),
                         Divider(
@@ -490,7 +486,9 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                                       ),
                                                       child: Container(
                                                         width: double.infinity,
-                                                        color: Colors.white,
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondaryBackground,
                                                         child:
                                                             ExpandableNotifier(
                                                           initialExpanded:
