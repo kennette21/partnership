@@ -33,13 +33,13 @@ class _AllChatsPageWidgetState extends State<AllChatsPageWidget> {
         child: Scaffold(
           key: scaffoldKey,
           appBar: AppBar(
-            backgroundColor: Colors.white,
+            backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
             automaticallyImplyLeading: false,
             title: Text(
               'All Chats',
               style: FlutterFlowTheme.of(context).bodyText1.override(
                     fontFamily: 'Poppins',
-                    color: Colors.black,
+                    color: FlutterFlowTheme.of(context).primaryText,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -102,23 +102,24 @@ class _AllChatsPageWidgetState extends State<AllChatsPageWidget> {
                                 .contains(currentUserReference),
                             title: chatInfo.chatPreviewTitle(),
                             userProfilePic: chatInfo.chatPreviewPic(),
-                            color: Color(0xFFEEF0F5),
+                            color:
+                                FlutterFlowTheme.of(context).primaryBackground,
                             unreadColor: Colors.blue,
                             titleTextStyle: GoogleFonts.getFont(
                               'DM Sans',
-                              color: Colors.black,
+                              color: FlutterFlowTheme.of(context).primaryText,
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
                             dateTextStyle: GoogleFonts.getFont(
                               'DM Sans',
-                              color: Color(0x73000000),
+                              color: FlutterFlowTheme.of(context).tertiaryColor,
                               fontWeight: FontWeight.normal,
                               fontSize: 14,
                             ),
                             previewTextStyle: GoogleFonts.getFont(
                               'DM Sans',
-                              color: Color(0x73000000),
+                              color: FlutterFlowTheme.of(context).secondaryText,
                               fontWeight: FontWeight.normal,
                               fontSize: 14,
                             ),

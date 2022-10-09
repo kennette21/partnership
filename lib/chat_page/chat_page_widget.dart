@@ -60,6 +60,7 @@ class _ChatPageWidgetState extends State<ChatPageWidget> {
         color: FlutterFlowTheme.of(context).primaryColor,
         child: Scaffold(
           key: scaffoldKey,
+          backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
           appBar: AppBar(
             backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
             automaticallyImplyLeading: false,
@@ -70,7 +71,7 @@ class _ChatPageWidgetState extends State<ChatPageWidget> {
               buttonSize: 60,
               icon: Icon(
                 Icons.arrow_back_rounded,
-                color: Colors.black,
+                color: FlutterFlowTheme.of(context).primaryText,
                 size: 24,
               ),
               onPressed: () async {
@@ -107,25 +108,23 @@ class _ChatPageWidgetState extends State<ChatPageWidget> {
                   ? FFChatPage(
                       chatInfo: snapshot.data!,
                       allowImages: true,
-                      backgroundColor: Color(0xFFF2F4F8),
+                      backgroundColor:
+                          FlutterFlowTheme.of(context).primaryBackground,
                       timeDisplaySetting: TimeDisplaySetting.visibleOnTap,
                       currentUserBoxDecoration: BoxDecoration(
-                        color: Colors.white,
+                        color: FlutterFlowTheme.of(context).secondaryBackground,
                         border: Border.all(
                           color: Colors.transparent,
                         ),
                         borderRadius: BorderRadius.circular(15),
                       ),
                       otherUsersBoxDecoration: BoxDecoration(
-                        color: Color(0xFF4B39EF),
-                        border: Border.all(
-                          color: Colors.transparent,
-                        ),
+                        color: FlutterFlowTheme.of(context).primaryColor,
                         borderRadius: BorderRadius.circular(15),
                       ),
                       currentUserTextStyle: GoogleFonts.getFont(
                         'DM Sans',
-                        color: Color(0xFF1E2429),
+                        color: FlutterFlowTheme.of(context).primaryText,
                         fontWeight: FontWeight.w500,
                         fontSize: 14,
                         fontStyle: FontStyle.normal,
@@ -138,13 +137,13 @@ class _ChatPageWidgetState extends State<ChatPageWidget> {
                       ),
                       inputHintTextStyle: GoogleFonts.getFont(
                         'DM Sans',
-                        color: Color(0xFF95A1AC),
+                        color: FlutterFlowTheme.of(context).secondaryText,
                         fontWeight: FontWeight.normal,
                         fontSize: 14,
                       ),
                       inputTextStyle: GoogleFonts.getFont(
                         'DM Sans',
-                        color: Colors.black,
+                        color: FlutterFlowTheme.of(context).primaryBackground,
                         fontWeight: FontWeight.normal,
                         fontSize: 14,
                       ),
