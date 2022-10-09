@@ -123,6 +123,7 @@ class _NavBarPageState extends State<NavBarPage> {
     final tabs = {
       'Browse': BrowseWidget(),
       'Profile': ProfileWidget(),
+      'AllChatsPage': AllChatsPageWidget(),
     };
     final currentIndex = tabs.keys.toList().indexOf(_currentPageName);
     return Scaffold(
@@ -154,6 +155,18 @@ class _NavBarPageState extends State<NavBarPage> {
               size: 24,
             ),
             label: 'Profile',
+            tooltip: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.chat_bubble_outline,
+              size: 24,
+            ),
+            activeIcon: Icon(
+              Icons.chat_bubble_rounded,
+              size: 24,
+            ),
+            label: '',
             tooltip: '',
           )
         ],

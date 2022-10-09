@@ -36,6 +36,7 @@ dependencies:
   cloud_functions: 3.3.1
   cloud_functions_platform_interface: 5.1.10
   cloud_functions_web: 4.2.18
+  dash_chat: 1.1.16
   easy_debounce: 2.0.1
   equatable: 2.0.3
   expandable: 5.0.1

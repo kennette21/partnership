@@ -1,8 +1,10 @@
 import '../auth/auth_util.dart';
 import '../backend/backend.dart';
+import '../chat_page/chat_page_widget.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
+import '../flutter_flow/flutter_flow_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -86,7 +88,7 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                     child: SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
                             width: 120,
@@ -106,6 +108,43 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                             ),
                             textAlign: TextAlign.center,
                             style: FlutterFlowTheme.of(context).title3,
+                          ),
+                          FFButtonWidget(
+                            onPressed: () async {
+                              logFirebaseEvent(
+                                  'PROFILE_VIEW_PAGE_MESSAGE_BTN_ON_TAP');
+                              logFirebaseEvent('Button_Navigate-To');
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChatPageWidget(
+                                    chatUser: profileViewUsersRecord,
+                                  ),
+                                ),
+                              );
+                            },
+                            text: 'Message',
+                            icon: Icon(
+                              Icons.message,
+                              size: 15,
+                            ),
+                            options: FFButtonOptions(
+                              width: 130,
+                              height: 40,
+                              color:
+                                  FlutterFlowTheme.of(context).secondaryColor,
+                              textStyle: FlutterFlowTheme.of(context)
+                                  .subtitle2
+                                  .override(
+                                    fontFamily: 'Poppins',
+                                    color: Colors.white,
+                                  ),
+                              borderSide: BorderSide(
+                                color: Colors.transparent,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                           Padding(
                             padding:
