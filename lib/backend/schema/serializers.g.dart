@@ -13,6 +13,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(ProjectsRecord.serializer)
       ..add(RatingsRecord.serializer)
       ..add(SkillsRecord.serializer)
+      ..add(StreamsRecord.serializer)
       ..add(SubscriptionsRecord.serializer)
       ..add(UsersRecord.serializer)
       ..addBuilderFactory(

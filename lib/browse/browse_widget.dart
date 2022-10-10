@@ -5,7 +5,9 @@ import '../create_project/create_project_widget.dart';
 import '../flutter_flow/flutter_flow_choice_chips.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
+import '../flutter_flow/flutter_flow_widgets.dart';
 import '../project/project_widget.dart';
+import '../streams_page/streams_page_widget.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_debounce/easy_debounce.dart';
@@ -123,7 +125,38 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            actions: [],
+            actions: [
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(6, 10, 6, 10),
+                child: FFButtonWidget(
+                  onPressed: () async {
+                    logFirebaseEvent('BROWSE_PAGE_STREAMS_BTN_ON_TAP');
+                    logFirebaseEvent('Button_Navigate-To');
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StreamsPageWidget(),
+                      ),
+                    );
+                  },
+                  text: 'Streams',
+                  options: FFButtonOptions(
+                    width: 130,
+                    height: 40,
+                    color: FlutterFlowTheme.of(context).primaryColor,
+                    textStyle: FlutterFlowTheme.of(context).subtitle2.override(
+                          fontFamily: 'Poppins',
+                          color: Colors.white,
+                        ),
+                    borderSide: BorderSide(
+                      color: Colors.transparent,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
             centerTitle: false,
             elevation: 0,
           ),

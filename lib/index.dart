@@ -9,3 +9,6 @@ export 'profile_view/profile_view_widget.dart' show ProfileViewWidget;
 export 'stream_help/stream_help_widget.dart' show StreamHelpWidget;
 export 'chat_page/chat_page_widget.dart' show ChatPageWidget;
 export 'all_chats_page/all_chats_page_widget.dart' show AllChatsPageWidget;
+export 'streams_page/streams_page_widget.dart' show StreamsPageWidget;
+export 'broadcast_page/broadcast_page_widget.dart' show BroadcastPageWidget;
+export 'live_video_page/live_video_page_widget.dart' show LiveVideoPageWidget;

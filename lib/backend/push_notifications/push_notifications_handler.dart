@@ -95,6 +95,14 @@ final pageBuilderMap = <String, Future<Widget> Function(Map<String, dynamic>)>{
         chatRef: getParameter(data, 'chatRef'),
       ),
   'AllChatsPage': (data) async => NavBarPage(initialPage: 'AllChatsPage'),
+  'StreamsPage': (data) async => StreamsPageWidget(),
+  'BroadcastPage': (data) async => BroadcastPageWidget(
+        videoName: getParameter(data, 'videoName'),
+      ),
+  'LiveVideoPage': (data) async => LiveVideoPageWidget(
+        streamData: await getDocumentParameter(
+            data, 'streamData', StreamsRecord.serializer),
+      ),
 };
 
 bool hasMatchingParameters(Map<String, dynamic> data, Set<String> params) =>
