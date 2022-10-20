@@ -71,7 +71,7 @@ class _EditProfilePromptWidgetState extends State<EditProfilePromptWidget> {
             FFButtonWidget(
               onPressed: () async {
                 logFirebaseEvent('EDIT_PROFILE_PROMPT_EDIT_PROFILE_BTN_ON_');
-                logFirebaseEvent('Button_Navigate-To');
+                logFirebaseEvent('Button_navigate_to');
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -101,7 +101,7 @@ class _EditProfilePromptWidgetState extends State<EditProfilePromptWidget> {
               child: FFButtonWidget(
                 onPressed: () async {
                   logFirebaseEvent('EDIT_PROFILE_PROMPT_LATER_BTN_ON_TAP');
-                  logFirebaseEvent('Button_Navigate-Back');
+                  logFirebaseEvent('Button_navigate_back');
                   Navigator.pop(context);
                 },
                 text: 'Later',

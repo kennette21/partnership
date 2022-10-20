@@ -299,7 +299,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   logFirebaseEvent(
                                       'CREATE_PROJECT_StreamJustification_ON_TA');
                                   logFirebaseEvent(
-                                      'StreamJustification_Navigate-To');
+                                      'StreamJustification_navigate_to');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -415,6 +415,8 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                       listViewSkillsSkillsRecordList[
                                           listViewSkillsIndex];
                                   return EditableProjSkillRatingWidget(
+                                    key: Key(
+                                        'EditableProjSkillRating_${listViewSkillsIndex}'),
                                     skillDoc: listViewSkillsSkillsRecord,
                                     project: createProjectProjectsRecord,
                                   );
@@ -434,10 +436,10 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                 onPressed: () async {
                                   logFirebaseEvent(
                                       'CREATE_PROJECT_PAGE_DELETE_BTN_ON_TAP');
-                                  logFirebaseEvent('Button_Backend-Call');
+                                  logFirebaseEvent('Button_backend_call');
                                   await createProjectProjectsRecord.reference
                                       .delete();
-                                  logFirebaseEvent('Button_Navigate-To');
+                                  logFirebaseEvent('Button_navigate_to');
                                   await Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
@@ -473,7 +475,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                 onPressed: () async {
                                   logFirebaseEvent(
                                       'CREATE_PROJECT_PAGE_DoneButton_ON_TAP');
-                                  logFirebaseEvent('DoneButton_Backend-Call');
+                                  logFirebaseEvent('DoneButton_backend_call');
 
                                   final projectsUpdateData = {
                                     ...createProjectsRecordData(
@@ -491,7 +493,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   };
                                   await widget.projectRef!
                                       .update(projectsUpdateData);
-                                  logFirebaseEvent('DoneButton_Navigate-To');
+                                  logFirebaseEvent('DoneButton_navigate_to');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(

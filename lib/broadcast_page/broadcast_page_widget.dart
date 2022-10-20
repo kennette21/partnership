@@ -169,7 +169,7 @@ class _BroadcastPageWidgetState extends State<BroadcastPageWidget> {
                         await startStreaming();
                         logFirebaseEvent(
                             'BROADCAST_MuxBroadcast_arjcssw3_ON_MUX_B');
-                        logFirebaseEvent('MuxBroadcast_Backend-Call');
+                        logFirebaseEvent('MuxBroadcast_backend_call');
 
                         final streamsCreateData = createStreamsRecordData(
                           isLive: true,
@@ -190,14 +190,14 @@ class _BroadcastPageWidgetState extends State<BroadcastPageWidget> {
                         stopStreaming();
                         logFirebaseEvent(
                             'BROADCAST_MuxBroadcast_arjcssw3_ON_MUX_B');
-                        logFirebaseEvent('MuxBroadcast_Backend-Call');
+                        logFirebaseEvent('MuxBroadcast_backend_call');
 
                         final streamsUpdateData = createStreamsRecordData(
                           isLive: false,
                         );
                         await muxStreamOutput!.reference
                             .update(streamsUpdateData);
-                        logFirebaseEvent('MuxBroadcast_Navigate-Back');
+                        logFirebaseEvent('MuxBroadcast_navigate_back');
                         Navigator.pop(context);
                       },
                     ),

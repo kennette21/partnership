@@ -66,7 +66,7 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                   onPressed: () async {
                     logFirebaseEvent(
                         'PROJECT_FloatingActionButton_hoc7lr47_ON');
-                    logFirebaseEvent('FloatingActionButton_Navigate-To');
+                    logFirebaseEvent('FloatingActionButton_navigate_to');
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -153,7 +153,7 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                         logFirebaseEvent(
                                             'PROJECT_PAGE_Following_ON_TAP');
                                         logFirebaseEvent(
-                                            'Following_Backend-Call');
+                                            'Following_backend_call');
                                         await rowFollowSubscriptionsRecord!
                                             .reference
                                             .delete();
@@ -194,7 +194,7 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                       onPressed: () async {
                                         logFirebaseEvent(
                                             'PROJECT_PAGE_Follow_ON_TAP');
-                                        logFirebaseEvent('Follow_Backend-Call');
+                                        logFirebaseEvent('Follow_backend_call');
 
                                         final subscriptionsCreateData =
                                             createSubscriptionsRecordData(
@@ -311,7 +311,7 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                     onTap: () async {
                                       logFirebaseEvent(
                                           'PROJECT_PAGE_Row_x5k6zunm_ON_TAP');
-                                      logFirebaseEvent('Row_Navigate-To');
+                                      logFirebaseEvent('Row_navigate_to');
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -885,7 +885,7 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                             logFirebaseEvent(
                                                 'PROJECT_PAGE_VIEW_STREAM_BTN_ON_TAP');
                                             logFirebaseEvent(
-                                                'Button_Launch-U-R-L');
+                                                'Button_launch_u_r_l');
                                             await launchURL(
                                                 projectProjectsRecord.stream!);
                                           },
@@ -927,7 +927,7 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                     onPressed: () async {
                                       logFirebaseEvent(
                                           'PROJECT_PAGE_JOIN_PROJECT_BTN_ON_TAP');
-                                      logFirebaseEvent('Button_Launch-U-R-L');
+                                      logFirebaseEvent('Button_launch_u_r_l');
                                       await launchURL(
                                           projectProjectsRecord.stream!);
                                     },

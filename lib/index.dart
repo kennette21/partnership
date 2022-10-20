@@ -12,3 +12,5 @@ export 'all_chats_page/all_chats_page_widget.dart' show AllChatsPageWidget;
 export 'streams_page/streams_page_widget.dart' show StreamsPageWidget;
 export 'broadcast_page/broadcast_page_widget.dart' show BroadcastPageWidget;
 export 'live_video_page/live_video_page_widget.dart' show LiveVideoPageWidget;
+export 'recorded_video_page/recorded_video_page_widget.dart'
+    show RecordedVideoPageWidget;

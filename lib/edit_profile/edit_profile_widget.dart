@@ -66,14 +66,14 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
               ),
               onPressed: () async {
                 logFirebaseEvent('EDIT_PROFILE_arrow_back_rounded_ICN_ON_T');
-                logFirebaseEvent('IconButton_Backend-Call');
+                logFirebaseEvent('IconButton_backend_call');
 
                 final usersUpdateData = createUsersRecordData(
                   bio: bioController!.text,
                   displayName: displayNameController!.text,
                 );
                 await currentUserReference!.update(usersUpdateData);
-                logFirebaseEvent('IconButton_Navigate-Back');
+                logFirebaseEvent('IconButton_navigate_back');
                 Navigator.pop(context);
               },
             ),
@@ -135,7 +135,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           onPressed: () async {
                             logFirebaseEvent(
                                 'EDIT_PROFILE_CHANGE_PHOTO_BTN_ON_TAP');
-                            logFirebaseEvent('Button_Upload-Photo-Video');
+                            logFirebaseEvent('Button_upload_photo_video');
                             final selectedMedia =
                                 await selectMediaWithSourceBottomSheet(
                               context: context,
@@ -178,7 +178,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                               }
                             }
 
-                            logFirebaseEvent('Button_Backend-Call');
+                            logFirebaseEvent('Button_backend_call');
 
                             final usersUpdateData = createUsersRecordData(
                               photoUrl: uploadedFileUrl,
@@ -357,6 +357,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                                 final listViewSkillsRecord =
                                     listViewSkillsRecordList[listViewIndex];
                                 return EditableUserSkillRatingWidget(
+                                  key: Key(
+                                      'EditableUserSkillRating_${listViewIndex}'),
                                   skillDoc: listViewSkillsRecord,
                                 );
                               },
@@ -375,7 +377,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           onPressed: () async {
                             logFirebaseEvent(
                                 'EDIT_PROFILE_BECOME_A_FOUNDER_BTN_ON_TAP');
-                            logFirebaseEvent('Button_Launch-U-R-L');
+                            logFirebaseEvent('Button_launch_u_r_l');
                             await launchURL(
                                 'https://docs.google.com/forms/d/e/1FAIpQLSdYpCgpIC7tzy8ziUxZ45aw_Z9OlJlymeh_SLA_7vaRla0tlQ/viewform?usp=sf_link');
                           },

@@ -85,7 +85,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                       logFirebaseEvent(
                                           'PROFILE_PAGE_DarkIcon_ON_TAP');
                                       logFirebaseEvent(
-                                          'DarkIcon_Set-Dark-Mode-Settings');
+                                          'DarkIcon_set_dark_mode_settings');
                                       setDarkModeSetting(
                                           context, ThemeMode.light);
                                     },
@@ -111,7 +111,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                       logFirebaseEvent(
                                           'PROFILE_PAGE_LightIcon_ON_TAP');
                                       logFirebaseEvent(
-                                          'LightIcon_Set-Dark-Mode-Settings');
+                                          'LightIcon_set_dark_mode_settings');
                                       setDarkModeSetting(
                                           context, ThemeMode.dark);
                                     },
@@ -313,7 +313,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                   logFirebaseEvent(
                                       'PROFILE_PAGE_CalendlyButton_ON_TAP');
                                   logFirebaseEvent(
-                                      'CalendlyButton_Launch-U-R-L');
+                                      'CalendlyButton_launch_u_r_l');
                                   await launchURL(profileUsersRecord.calendar!);
                                 },
                               ),
@@ -352,7 +352,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                           logFirebaseEvent(
                                               'PROFILE_PAGE_BecomeFounder_ON_TAP');
                                           logFirebaseEvent(
-                                              'BecomeFounder_Launch-U-R-L');
+                                              'BecomeFounder_launch_u_r_l');
                                           await launchURL(
                                               'https://docs.google.com/forms/d/e/1FAIpQLSdYpCgpIC7tzy8ziUxZ45aw_Z9OlJlymeh_SLA_7vaRla0tlQ/viewform?usp=sf_link');
                                         },
@@ -387,7 +387,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                       logFirebaseEvent(
                                           'PROFILE_PAGE_EditProfileButton_ON_TAP');
                                       logFirebaseEvent(
-                                          'EditProfileButton_Navigate-To');
+                                          'EditProfileButton_navigate_to');
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -420,7 +420,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                   onPressed: () async {
                                     logFirebaseEvent(
                                         'PROFILE_PAGE_LogoutButton_ON_TAP');
-                                    logFirebaseEvent('LogoutButton_Auth');
+                                    logFirebaseEvent('LogoutButton_auth');
                                     await signOut();
                                     await Navigator.pushAndRemoveUntil(
                                       context,

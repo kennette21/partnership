@@ -316,7 +316,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               logFirebaseEvent(
                                                   'LOGIN_PAGE_Button-Login_ON_TAP');
                                               logFirebaseEvent(
-                                                  'Button-Login_Auth');
+                                                  'Button-Login_auth');
 
                                               final user =
                                                   await signInWithEmail(
@@ -411,7 +411,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   logFirebaseEvent(
                                                       'LOGIN_PAGE_Container_rhpyfgjx_ON_TAP');
                                                   logFirebaseEvent(
-                                                      'Container_Auth');
+                                                      'Container_auth');
                                                   final user =
                                                       await signInWithGoogle(
                                                           context);
@@ -460,7 +460,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   logFirebaseEvent(
                                                       'LOGIN_PAGE_Container_vfkpvc68_ON_TAP');
                                                   logFirebaseEvent(
-                                                      'Container_Auth');
+                                                      'Container_auth');
                                                   final user =
                                                       await signInWithApple(
                                                           context);
@@ -799,7 +799,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                             onPressed: () async {
                                               logFirebaseEvent(
                                                   'LOGIN_PAGE_CREATE_ACCOUNT_BTN_ON_TAP');
-                                              logFirebaseEvent('Button_Auth');
+                                              logFirebaseEvent('Button_auth');
                                               if (passwordController?.text !=
                                                   passwordConfirmController
                                                       ?.text) {
@@ -908,7 +908,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   logFirebaseEvent(
                                                       'LOGIN_PAGE_Container_5havjnmt_ON_TAP');
                                                   logFirebaseEvent(
-                                                      'Container_Auth');
+                                                      'Container_auth');
                                                   final user =
                                                       await signInWithGoogle(
                                                           context);

@@ -72,7 +72,7 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                   onPressed: () async {
                     logFirebaseEvent(
                         'PROFILE_VIEW_arrow_back_rounded_ICN_ON_T');
-                    logFirebaseEvent('IconButton_Navigate-Back');
+                    logFirebaseEvent('IconButton_navigate_back');
                     Navigator.pop(context);
                   },
                 ),
@@ -113,7 +113,7 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                             onPressed: () async {
                               logFirebaseEvent(
                                   'PROFILE_VIEW_PAGE_MESSAGE_BTN_ON_TAP');
-                              logFirebaseEvent('Button_Navigate-To');
+                              logFirebaseEvent('Button_navigate_to');
                               await Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -322,7 +322,7 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                                   logFirebaseEvent(
                                       'PROFILE_VIEW_PAGE_CalendlyButton_ON_TAP');
                                   logFirebaseEvent(
-                                      'CalendlyButton_Launch-U-R-L');
+                                      'CalendlyButton_launch_u_r_l');
                                   await launchURL(
                                       profileViewUsersRecord.calendar!);
                                 },

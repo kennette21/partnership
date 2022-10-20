@@ -93,7 +93,7 @@ class _BroadcastNameComponentWidgetState
               child: FFButtonWidget(
                 onPressed: () async {
                   logFirebaseEvent('BROADCAST_NAME_COMPONENT_CONTINUE_BTN_ON');
-                  logFirebaseEvent('Button_Navigate-To');
+                  logFirebaseEvent('Button_navigate_to');
                   await Navigator.push(
                     context,
                     MaterialPageRoute(

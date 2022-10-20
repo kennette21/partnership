@@ -37,7 +37,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
       logFirebaseEvent('BROWSE_PAGE_Browse_ON_PAGE_LOAD');
       if (valueOrDefault(currentUserDocument?.bio, '') == null ||
           valueOrDefault(currentUserDocument?.bio, '') == '') {
-        logFirebaseEvent('Browse_Bottom-Sheet');
+        logFirebaseEvent('Browse_bottom_sheet');
         await showModalBottomSheet(
           isScrollControlled: true,
           backgroundColor: Colors.transparent,
@@ -82,7 +82,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
               child: FloatingActionButton(
                 onPressed: () async {
                   logFirebaseEvent('BROWSE_FloatingActionButton_i6jsit4h_ON_');
-                  logFirebaseEvent('FloatingActionButton_Backend-Call');
+                  logFirebaseEvent('FloatingActionButton_backend_call');
 
                   final projectsCreateData = createProjectsRecordData(
                     founder: currentUserReference,
@@ -91,7 +91,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                   await projectsRecordReference.set(projectsCreateData);
                   newProjectRef = ProjectsRecord.getDocumentFromData(
                       projectsCreateData, projectsRecordReference);
-                  logFirebaseEvent('FloatingActionButton_Navigate-To');
+                  logFirebaseEvent('FloatingActionButton_navigate_to');
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -131,7 +131,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                 child: FFButtonWidget(
                   onPressed: () async {
                     logFirebaseEvent('BROWSE_PAGE_STREAMS_BTN_ON_TAP');
-                    logFirebaseEvent('Button_Navigate-To');
+                    logFirebaseEvent('Button_navigate_to');
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -405,7 +405,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                 onTap: () async {
                                   logFirebaseEvent(
                                       'BROWSE_PAGE_ProjectCar_ON_TAP');
-                                  logFirebaseEvent('ProjectCar_Navigate-To');
+                                  logFirebaseEvent('ProjectCar_navigate_to');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -760,7 +760,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                             logFirebaseEvent(
                                 'BROWSE_Row-SearchProjects_ON_PULL_TO_REF');
                             logFirebaseEvent(
-                                'Row-SearchProjects_Refresh-Database-Requ');
+                                'Row-SearchProjects_refresh_database_requ');
                             setState(() => _algoliaRequestCompleter = null);
                             await waitForAlgoliaRequestCompleter();
                           },
@@ -782,7 +782,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                   onTap: () async {
                                     logFirebaseEvent(
                                         'BROWSE_PAGE_ProjectCar_ON_TAP');
-                                    logFirebaseEvent('ProjectCar_Navigate-To');
+                                    logFirebaseEvent('ProjectCar_navigate_to');
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(

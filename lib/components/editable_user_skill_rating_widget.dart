@@ -76,7 +76,7 @@ class _EditableUserSkillRatingWidgetState
                   setState(() => skillRatingValue = newValue);
                   logFirebaseEvent('EDITABLE_USER_SKILL_RATING_SkillRating_O');
                   if (skillRatingContainerRatingsRecord != null) {
-                    logFirebaseEvent('SkillRating_Backend-Call');
+                    logFirebaseEvent('SkillRating_backend_call');
 
                     final ratingsUpdateData = createRatingsRecordData(
                       value: skillRatingValue?.round(),
@@ -84,7 +84,7 @@ class _EditableUserSkillRatingWidgetState
                     await skillRatingContainerRatingsRecord!.reference
                         .update(ratingsUpdateData);
                   } else {
-                    logFirebaseEvent('SkillRating_Backend-Call');
+                    logFirebaseEvent('SkillRating_backend_call');
 
                     final ratingsCreateData = createRatingsRecordData(
                       skill: widget.skillDoc!.reference,

@@ -3,7 +3,9 @@ import '../components/broadcast_name_component_widget.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
+import '../flutter_flow/flutter_flow_widgets.dart';
 import '../live_video_page/live_video_page_widget.dart';
+import '../recorded_video_page/recorded_video_page_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -35,7 +37,7 @@ class _StreamsPageWidgetState extends State<StreamsPageWidget> {
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
               logFirebaseEvent('STREAMS_FloatingActionButton_8veui42d_ON');
-              logFirebaseEvent('FloatingActionButton_Bottom-Sheet');
+              logFirebaseEvent('FloatingActionButton_bottom_sheet');
               await showModalBottomSheet(
                 isScrollControlled: true,
                 backgroundColor: Colors.transparent,
@@ -115,7 +117,7 @@ class _StreamsPageWidgetState extends State<StreamsPageWidget> {
                                 logFirebaseEvent(
                                     'STREAMS_PAGE_PAGE_Card_gdz9yjy4_ON_TAP');
                                 if (listViewStreamsRecord.isLive!) {
-                                  logFirebaseEvent('Card_Navigate-To');
+                                  logFirebaseEvent('Card_navigate_to');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -125,7 +127,7 @@ class _StreamsPageWidgetState extends State<StreamsPageWidget> {
                                     ),
                                   );
                                 } else {
-                                  logFirebaseEvent('Card_Show-Snack-Bar');
+                                  logFirebaseEvent('Card_show_snack_bar');
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
@@ -196,6 +198,34 @@ class _StreamsPageWidgetState extends State<StreamsPageWidget> {
                         },
                       );
                     },
+                  ),
+                  FFButtonWidget(
+                    onPressed: () async {
+                      logFirebaseEvent('STREAMS_TEST_REC_VID_BTN_ON_TAP');
+                      logFirebaseEvent('Button_navigate_to');
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecordedVideoPageWidget(),
+                        ),
+                      );
+                    },
+                    text: 'Test Rec Vid',
+                    options: FFButtonOptions(
+                      width: 130,
+                      height: 40,
+                      color: FlutterFlowTheme.of(context).primaryColor,
+                      textStyle:
+                          FlutterFlowTheme.of(context).subtitle2.override(
+                                fontFamily: 'Poppins',
+                                color: Colors.white,
+                              ),
+                      borderSide: BorderSide(
+                        color: Colors.transparent,
+                        width: 1,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ],
               ),

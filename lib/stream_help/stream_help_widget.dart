@@ -44,7 +44,7 @@ class _StreamHelpWidgetState extends State<StreamHelpWidget> {
               ),
               onPressed: () async {
                 logFirebaseEvent('STREAM_HELP_arrow_back_rounded_ICN_ON_TA');
-                logFirebaseEvent('IconButton_Navigate-Back');
+                logFirebaseEvent('IconButton_navigate_back');
                 Navigator.pop(context);
               },
             ),
