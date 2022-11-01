@@ -256,8 +256,8 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                 .secondaryBackground,
                           ),
                           child: custom_widgets.MarkdownRenderer(
-                            width: double.infinity,
-                            height: double.infinity,
+                            width: 100,
+                            height: 100,
                             data: projectProjectsRecord.description!,
                           ),
                         ),
