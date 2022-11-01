@@ -81,7 +81,6 @@ class _BroadcastNameComponentWidgetState
                 ),
               ),
               style: FlutterFlowTheme.of(context).bodyText1,
-              maxLines: null,
             ),
           ),
           Padding(

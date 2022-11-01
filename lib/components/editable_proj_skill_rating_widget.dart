@@ -101,10 +101,15 @@ class _EditableProjSkillRatingWidgetState
                   color: FlutterFlowTheme.of(context).secondaryColor,
                 ),
                 direction: Axis.horizontal,
-                initialRating: skillRatingValue ??=
-                    skillRatingContainerRatingsRecord != null
-                        ? skillRatingContainerRatingsRecord!.value!.toDouble()
-                        : 0.0,
+                initialRating: skillRatingValue ??= valueOrDefault<double>(
+                  skillRatingContainerRatingsRecord != null
+                      ? valueOrDefault<double>(
+                          skillRatingContainerRatingsRecord!.value?.toDouble(),
+                          0.0,
+                        )
+                      : 0.0,
+                  0.0,
+                ),
                 unratedColor: Color(0xFF9E9E9E),
                 itemCount: 3,
                 itemSize: 40,
