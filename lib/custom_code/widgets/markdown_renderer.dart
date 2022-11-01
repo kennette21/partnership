@@ -28,7 +28,7 @@ class _MarkdownRendererState extends State<MarkdownRenderer> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: Markdown(
+        child: MarkdownBody(
             data: widget.data,
             styleSheet: MarkdownStyleSheet.fromTheme(Theme.of(context))));
   }
