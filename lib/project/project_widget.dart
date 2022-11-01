@@ -257,7 +257,7 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                           ),
                           child: custom_widgets.MarkdownRenderer(
                             width: double.infinity,
-                            height: 500,
+                            height: double.infinity,
                             data: projectProjectsRecord.description!,
                           ),
                         ),
