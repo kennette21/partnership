@@ -246,6 +246,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal,
                                 ),
+                            maxLines: null,
                           ),
                         ),
                       ),

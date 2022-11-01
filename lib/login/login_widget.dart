@@ -209,6 +209,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            maxLines: null,
                                           ),
                                         ),
                                         Padding(
@@ -305,6 +306,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            maxLines: null,
                                           ),
                                         ),
                                         Padding(
@@ -595,6 +597,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            maxLines: null,
                                           ),
                                         ),
                                         Padding(
@@ -691,6 +694,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            maxLines: null,
                                           ),
                                         ),
                                         Padding(
@@ -789,6 +793,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            maxLines: null,
                                           ),
                                         ),
                                         Padding(

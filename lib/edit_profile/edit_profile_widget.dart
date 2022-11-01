@@ -258,6 +258,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                               EdgeInsetsDirectional.fromSTEB(20, 24, 0, 24),
                         ),
                         style: FlutterFlowTheme.of(context).bodyText1,
+                        maxLines: null,
                       ),
                     ),
                   ),

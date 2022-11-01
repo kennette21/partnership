@@ -156,6 +156,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(20, 24, 0, 24),
                             ),
                             style: FlutterFlowTheme.of(context).bodyText1,
+                            maxLines: null,
                           ),
                         ),
                         Padding(
@@ -273,6 +274,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(20, 24, 0, 24),
                             ),
                             style: FlutterFlowTheme.of(context).bodyText1,
+                            maxLines: null,
                           ),
                         ),
                         Padding(
@@ -367,6 +369,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                           20, 24, 0, 24),
                                 ),
                                 style: FlutterFlowTheme.of(context).bodyText1,
+                                maxLines: null,
                               ),
                             ),
                           ],
