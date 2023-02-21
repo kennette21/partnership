@@ -8,7 +8,11 @@ import '../flutter_flow/flutter_flow_widgets.dart';
 import '../login/login_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'profile_model.dart';
+export 'profile_model.dart';
 
 class ProfileWidget extends StatefulWidget {
   const ProfileWidget({Key? key}) : super(key: key);
@@ -18,13 +22,26 @@ class ProfileWidget extends StatefulWidget {
 }
 
 class _ProfileWidgetState extends State<ProfileWidget> {
+  late ProfileModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => ProfileModel());
+
     logFirebaseEvent('screen_view', parameters: {'screen_name': 'Profile'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    _unfocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -38,8 +55,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             child: SizedBox(
               width: 50,
               height: 50,
-              child: CircularProgressIndicator(
+              child: SpinKitCubeGrid(
                 color: FlutterFlowTheme.of(context).primaryColor,
+                size: 50,
               ),
             ),
           );
@@ -53,7 +71,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
               body: SafeArea(
                 child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
+                  onTap: () =>
+                      FocusScope.of(context).requestFocus(_unfocusNode),
                   child: Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
                     child: SingleChildScrollView(
@@ -204,9 +223,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                     child: SizedBox(
                                       width: 50,
                                       height: 50,
-                                      child: CircularProgressIndicator(
+                                      child: SpinKitCubeGrid(
                                         color: FlutterFlowTheme.of(context)
                                             .primaryColor,
+                                        size: 50,
                                       ),
                                     ),
                                   );
@@ -234,10 +254,11 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                             child: SizedBox(
                                               width: 50,
                                               height: 50,
-                                              child: CircularProgressIndicator(
+                                              child: SpinKitCubeGrid(
                                                 color:
                                                     FlutterFlowTheme.of(context)
                                                         .primaryColor,
+                                                size: 50,
                                               ),
                                             ),
                                           );
@@ -347,7 +368,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                                     padding: EdgeInsetsDirectional.fromSTEB(
                                         0, 0, 0, 8),
                                     child: AuthUserStreamWidget(
-                                      child: FFButtonWidget(
+                                      builder: (context) => FFButtonWidget(
                                         onPressed: () async {
                                           logFirebaseEvent(
                                               'PROFILE_PAGE_BecomeFounder_ON_TAP');

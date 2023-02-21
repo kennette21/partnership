@@ -3,7 +3,11 @@ import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'simple_project_view_skills_with_founder_model.dart';
+export 'simple_project_view_skills_with_founder_model.dart';
 
 class SimpleProjectViewSkillsWithFounderWidget extends StatefulWidget {
   const SimpleProjectViewSkillsWithFounderWidget({Key? key}) : super(key: key);
@@ -15,11 +19,28 @@ class SimpleProjectViewSkillsWithFounderWidget extends StatefulWidget {
 
 class _SimpleProjectViewSkillsWithFounderWidgetState
     extends State<SimpleProjectViewSkillsWithFounderWidget> {
+  late SimpleProjectViewSkillsWithFounderModel _model;
+
+  @override
+  void setState(VoidCallback callback) {
+    super.setState(callback);
+    _model.onUpdate();
+  }
+
   @override
   void initState() {
     super.initState();
+    _model =
+        createModel(context, () => SimpleProjectViewSkillsWithFounderModel());
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.maybeDispose();
+
+    super.dispose();
   }
 
   @override
@@ -39,9 +60,13 @@ class _SimpleProjectViewSkillsWithFounderWidgetState
           itemCount: 3,
           itemSize: 40,
         ),
-        SkilltagWidget(
-          value: 'Set from Var later',
-          selected: true,
+        wrapWithModel(
+          model: _model.skilltagModel,
+          updateCallback: () => setState(() {}),
+          child: SkilltagWidget(
+            value: 'Set from Var later',
+            selected: true,
+          ),
         ),
         RatingBarIndicator(
           itemBuilder: (context, index) => Icon(

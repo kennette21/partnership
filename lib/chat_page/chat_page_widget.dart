@@ -5,7 +5,11 @@ import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'chat_page_model.dart';
+export 'chat_page_model.dart';
 
 class ChatPageWidget extends StatefulWidget {
   const ChatPageWidget({
@@ -22,6 +26,9 @@ class ChatPageWidget extends StatefulWidget {
 }
 
 class _ChatPageWidgetState extends State<ChatPageWidget> {
+  late ChatPageModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
   FFChatInfo? _chatInfo;
   bool isGroupChat() {
     if (widget.chatUser == null) {
@@ -33,11 +40,12 @@ class _ChatPageWidgetState extends State<ChatPageWidget> {
     return _chatInfo?.isGroupChat ?? false;
   }
 
-  final scaffoldKey = GlobalKey<ScaffoldState>();
-
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => ChatPageModel());
+
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'ChatPage'});
     FFChatManager.instance
         .getChatInfo(
       otherUserRecord: widget.chatUser,
@@ -49,8 +57,14 @@ class _ChatPageWidgetState extends State<ChatPageWidget> {
       }
     });
 
-    logFirebaseEvent('screen_view', parameters: {'screen_name': 'ChatPage'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -156,8 +170,9 @@ class _ChatPageWidgetState extends State<ChatPageWidget> {
                       child: SizedBox(
                         width: 50,
                         height: 50,
-                        child: CircularProgressIndicator(
+                        child: SpinKitCubeGrid(
                           color: FlutterFlowTheme.of(context).primaryColor,
+                          size: 50,
                         ),
                       ),
                     ),

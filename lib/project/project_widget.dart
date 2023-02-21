@@ -1,5 +1,6 @@
 import '../auth/auth_util.dart';
 import '../backend/backend.dart';
+import '../components/project_completeness_widget.dart';
 import '../components/skilltag_widget.dart';
 import '../create_project/create_project_widget.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
@@ -12,7 +13,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'project_model.dart';
+export 'project_model.dart';
 
 class ProjectWidget extends StatefulWidget {
   const ProjectWidget({
@@ -27,13 +32,26 @@ class ProjectWidget extends StatefulWidget {
 }
 
 class _ProjectWidgetState extends State<ProjectWidget> {
+  late ProjectModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => ProjectModel());
+
     logFirebaseEvent('screen_view', parameters: {'screen_name': 'Project'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    _unfocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -47,8 +65,9 @@ class _ProjectWidgetState extends State<ProjectWidget> {
             child: SizedBox(
               width: 50,
               height: 50,
-              child: CircularProgressIndicator(
+              child: SpinKitCubeGrid(
                 color: FlutterFlowTheme.of(context).primaryColor,
+                size: 50,
               ),
             ),
           );
@@ -102,11 +121,12 @@ class _ProjectWidgetState extends State<ProjectWidget> {
               ),
               body: SafeArea(
                 child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
+                  onTap: () =>
+                      FocusScope.of(context).requestFocus(_unfocusNode),
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         StreamBuilder<List<SubscriptionsRecord>>(
                           stream: querySubscriptionsRecord(
@@ -125,9 +145,10 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                 child: SizedBox(
                                   width: 50,
                                   height: 50,
-                                  child: CircularProgressIndicator(
+                                  child: SpinKitCubeGrid(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryColor,
+                                    size: 50,
                                   ),
                                 ),
                               );
@@ -248,17 +269,36 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                         ),
                         Container(
                           width: double.infinity,
-                          constraints: BoxConstraints(
-                            maxHeight: 700,
-                          ),
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
                           ),
-                          child: custom_widgets.MarkdownRenderer(
-                            width: 100,
-                            height: 100,
-                            data: projectProjectsRecord.description!,
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(6, 0, 6, 0),
+                            child: custom_widgets.MarkdownRenderer(
+                              width: 100,
+                              height: 100,
+                              data: projectProjectsRecord.description!,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Text(
+                                'Completeness',
+                                style: FlutterFlowTheme.of(context).subtitle2,
+                              ),
+                            ],
+                          ),
+                        ),
+                        wrapWithModel(
+                          model: _model.projectCompletenessModel,
+                          updateCallback: () => setState(() {}),
+                          child: ProjectCompletenessWidget(
+                            completeness: projectProjectsRecord.completeness,
                           ),
                         ),
                         Divider(
@@ -277,9 +317,10 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                 child: SizedBox(
                                   width: 50,
                                   height: 50,
-                                  child: CircularProgressIndicator(
+                                  child: SpinKitCubeGrid(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryColor,
+                                    size: 50,
                                   ),
                                 ),
                               );
@@ -381,10 +422,11 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                           child: SizedBox(
                                             width: 50,
                                             height: 50,
-                                            child: CircularProgressIndicator(
+                                            child: SpinKitCubeGrid(
                                               color:
                                                   FlutterFlowTheme.of(context)
                                                       .primaryColor,
+                                              size: 50,
                                             ),
                                           ),
                                         );
@@ -415,12 +457,12 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                                   child: SizedBox(
                                                     width: 50,
                                                     height: 50,
-                                                    child:
-                                                        CircularProgressIndicator(
+                                                    child: SpinKitCubeGrid(
                                                       color:
                                                           FlutterFlowTheme.of(
                                                                   context)
                                                               .primaryColor,
+                                                      size: 50,
                                                     ),
                                                   ),
                                                 );
@@ -456,10 +498,11 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                                           width: 50,
                                                           height: 50,
                                                           child:
-                                                              CircularProgressIndicator(
+                                                              SpinKitCubeGrid(
                                                             color: FlutterFlowTheme
                                                                     .of(context)
                                                                 .primaryColor,
+                                                            size: 50,
                                                           ),
                                                         ),
                                                       );
@@ -467,7 +510,7 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                                     List<RatingsRecord>
                                                         containerRatingsRecordList =
                                                         snapshot.data!;
-                                                    // Return an empty Container when the document does not exist.
+                                                    // Return an empty Container when the item does not exist.
                                                     if (snapshot
                                                         .data!.isEmpty) {
                                                       return Container();
@@ -514,6 +557,8 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                                                         .bodyText2,
                                                                   ),
                                                                   SkilltagWidget(
+                                                                    key: Key(
+                                                                        'Keyzvf_${listViewSkillsIndex}_of_${listViewSkillsRatingsRecordList.length}'),
                                                                     value:
                                                                         containerSkillsRecord
                                                                             .name,
@@ -631,9 +676,11 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                                                       height:
                                                                           50,
                                                                       child:
-                                                                          CircularProgressIndicator(
+                                                                          SpinKitCubeGrid(
                                                                         color: FlutterFlowTheme.of(context)
                                                                             .primaryColor,
+                                                                        size:
+                                                                            50,
                                                                       ),
                                                                     ),
                                                                   );
@@ -642,7 +689,7 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                                                     columnRatingsRecordList =
                                                                     snapshot
                                                                         .data!;
-                                                                // Return an empty Container when the document does not exist.
+                                                                // Return an empty Container when the item does not exist.
                                                                 if (snapshot
                                                                     .data!
                                                                     .isEmpty) {

@@ -5,7 +5,11 @@ import '../flutter_flow/flutter_flow_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'editable_user_skill_rating_model.dart';
+export 'editable_user_skill_rating_model.dart';
 
 class EditableUserSkillRatingWidget extends StatefulWidget {
   const EditableUserSkillRatingWidget({
@@ -22,13 +26,27 @@ class EditableUserSkillRatingWidget extends StatefulWidget {
 
 class _EditableUserSkillRatingWidgetState
     extends State<EditableUserSkillRatingWidget> {
-  double? skillRatingValue;
+  late EditableUserSkillRatingModel _model;
+
+  @override
+  void setState(VoidCallback callback) {
+    super.setState(callback);
+    _model.onUpdate();
+  }
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => EditableUserSkillRatingModel());
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.maybeDispose();
+
+    super.dispose();
   }
 
   @override
@@ -47,8 +65,9 @@ class _EditableUserSkillRatingWidgetState
             child: SizedBox(
               width: 50,
               height: 50,
-              child: CircularProgressIndicator(
+              child: SpinKitCubeGrid(
                 color: FlutterFlowTheme.of(context).primaryColor,
+                size: 50,
               ),
             ),
           );
@@ -73,13 +92,13 @@ class _EditableUserSkillRatingWidgetState
               ),
               RatingBar.builder(
                 onRatingUpdate: (newValue) async {
-                  setState(() => skillRatingValue = newValue);
+                  setState(() => _model.skillRatingValue = newValue);
                   logFirebaseEvent('EDITABLE_USER_SKILL_RATING_SkillRating_O');
                   if (skillRatingContainerRatingsRecord != null) {
                     logFirebaseEvent('SkillRating_backend_call');
 
                     final ratingsUpdateData = createRatingsRecordData(
-                      value: skillRatingValue?.round(),
+                      value: _model.skillRatingValue?.round(),
                     );
                     await skillRatingContainerRatingsRecord!.reference
                         .update(ratingsUpdateData);
@@ -89,7 +108,7 @@ class _EditableUserSkillRatingWidgetState
                     final ratingsCreateData = createRatingsRecordData(
                       skill: widget.skillDoc!.reference,
                       user: currentUserReference,
-                      value: skillRatingValue?.round(),
+                      value: _model.skillRatingValue?.round(),
                     );
                     await RatingsRecord.collection.doc().set(ratingsCreateData);
                   }
@@ -99,7 +118,7 @@ class _EditableUserSkillRatingWidgetState
                   color: FlutterFlowTheme.of(context).secondaryColor,
                 ),
                 direction: Axis.horizontal,
-                initialRating: skillRatingValue ??=
+                initialRating: _model.skillRatingValue ??=
                     skillRatingContainerRatingsRecord != null
                         ? skillRatingContainerRatingsRecord!.value!.toDouble()
                         : 0.0,

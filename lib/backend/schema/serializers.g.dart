@@ -9,6 +9,7 @@ part of 'serializers.dart';
 Serializers _$serializers = (new Serializers().toBuilder()
       ..add(ChatMessagesRecord.serializer)
       ..add(ChatsRecord.serializer)
+      ..add(DefaultsRecord.serializer)
       ..add(FollowingRecord.serializer)
       ..add(ProjectsRecord.serializer)
       ..add(RatingsRecord.serializer)

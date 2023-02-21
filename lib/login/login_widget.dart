@@ -1,12 +1,17 @@
 import '../auth/auth_util.dart';
+import '../backend/push_notifications/push_notifications_handler.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import '../main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'login_model.dart';
+export 'login_model.dart';
 
 class LoginWidget extends StatefulWidget {
   const LoginWidget({Key? key}) : super(key: key);
@@ -16,41 +21,30 @@ class LoginWidget extends StatefulWidget {
 }
 
 class _LoginWidgetState extends State<LoginWidget> {
-  TextEditingController? emailAddressController;
-  TextEditingController? passwordController;
+  late LoginModel _model;
 
-  late bool passwordVisibility;
-  TextEditingController? passwordConfirmController;
-
-  late bool passwordConfirmVisibility;
-  TextEditingController? emailAddressLoginController;
-  TextEditingController? passwordLoginController;
-
-  late bool passwordLoginVisibility;
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    emailAddressController = TextEditingController();
-    passwordController = TextEditingController();
-    passwordVisibility = false;
-    passwordConfirmController = TextEditingController();
-    passwordConfirmVisibility = false;
-    emailAddressLoginController = TextEditingController();
-    passwordLoginController = TextEditingController();
-    passwordLoginVisibility = false;
+    _model = createModel(context, () => LoginModel());
+
     logFirebaseEvent('screen_view', parameters: {'screen_name': 'Login'});
+    _model.emailAddressLoginController ??= TextEditingController();
+    _model.passwordLoginController ??= TextEditingController();
+    _model.emailAddressController ??= TextEditingController();
+    _model.passwordController ??= TextEditingController();
+    _model.passwordConfirmController ??= TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
   void dispose() {
-    emailAddressController?.dispose();
-    passwordController?.dispose();
-    passwordConfirmController?.dispose();
-    emailAddressLoginController?.dispose();
-    passwordLoginController?.dispose();
+    _model.dispose();
+
+    _unfocusNode.dispose();
     super.dispose();
   }
 
@@ -63,7 +57,7 @@ class _LoginWidgetState extends State<LoginWidget> {
           key: scaffoldKey,
           backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
           body: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
+            onTap: () => FocusScope.of(context).requestFocus(_unfocusNode),
             child: Padding(
               padding: EdgeInsetsDirectional.fromSTEB(0, 70, 0, 0),
               child: Column(
@@ -137,8 +131,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               EdgeInsetsDirectional.fromSTEB(
                                                   0, 20, 0, 0),
                                           child: TextFormField(
-                                            controller:
-                                                emailAddressLoginController,
+                                            controller: _model
+                                                .emailAddressLoginController,
                                             obscureText: false,
                                             decoration: InputDecoration(
                                               labelText: 'Email Address',
@@ -209,6 +203,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            validator: _model
+                                                .emailAddressLoginControllerValidator
+                                                .asValidator(context),
                                           ),
                                         ),
                                         Padding(
@@ -216,9 +213,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               EdgeInsetsDirectional.fromSTEB(
                                                   0, 12, 0, 0),
                                           child: TextFormField(
-                                            controller: passwordLoginController,
+                                            controller:
+                                                _model.passwordLoginController,
                                             obscureText:
-                                                !passwordLoginVisibility,
+                                                !_model.passwordLoginVisibility,
                                             decoration: InputDecoration(
                                               labelText: 'Password',
                                               labelStyle: FlutterFlowTheme.of(
@@ -281,13 +279,15 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                       .fromSTEB(20, 24, 20, 24),
                                               suffixIcon: InkWell(
                                                 onTap: () => setState(
-                                                  () => passwordLoginVisibility =
-                                                      !passwordLoginVisibility,
+                                                  () => _model
+                                                          .passwordLoginVisibility =
+                                                      !_model
+                                                          .passwordLoginVisibility,
                                                 ),
                                                 focusNode: FocusNode(
                                                     skipTraversal: true),
                                                 child: Icon(
-                                                  passwordLoginVisibility
+                                                  _model.passwordLoginVisibility
                                                       ? Icons
                                                           .visibility_outlined
                                                       : Icons
@@ -305,6 +305,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            validator: _model
+                                                .passwordLoginControllerValidator
+                                                .asValidator(context),
                                           ),
                                         ),
                                         Padding(
@@ -321,9 +324,11 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               final user =
                                                   await signInWithEmail(
                                                 context,
-                                                emailAddressLoginController!
+                                                _model
+                                                    .emailAddressLoginController
                                                     .text,
-                                                passwordLoginController!.text,
+                                                _model.passwordLoginController
+                                                    .text,
                                               );
                                               if (user == null) {
                                                 return;
@@ -334,9 +339,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      NavBarPage(
-                                                          initialPage:
-                                                              'Browse'),
+                                                      PushNotificationsHandler(
+                                                    child: NavBarPage(
+                                                        initialPage: 'Browse'),
+                                                  ),
                                                 ),
                                                 (r) => false,
                                               );
@@ -423,9 +429,11 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                     context,
                                                     MaterialPageRoute(
                                                       builder: (context) =>
-                                                          NavBarPage(
-                                                              initialPage:
-                                                                  'Browse'),
+                                                          PushNotificationsHandler(
+                                                        child: NavBarPage(
+                                                            initialPage:
+                                                                'Browse'),
+                                                      ),
                                                     ),
                                                     (r) => false,
                                                   );
@@ -472,9 +480,11 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                     context,
                                                     MaterialPageRoute(
                                                       builder: (context) =>
-                                                          NavBarPage(
-                                                              initialPage:
-                                                                  'Browse'),
+                                                          PushNotificationsHandler(
+                                                        child: NavBarPage(
+                                                            initialPage:
+                                                                'Browse'),
+                                                      ),
                                                     ),
                                                     (r) => false,
                                                   );
@@ -523,7 +533,8 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               EdgeInsetsDirectional.fromSTEB(
                                                   0, 20, 0, 0),
                                           child: TextFormField(
-                                            controller: emailAddressController,
+                                            controller:
+                                                _model.emailAddressController,
                                             obscureText: false,
                                             decoration: InputDecoration(
                                               labelText: 'Email Address',
@@ -595,6 +606,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            validator: _model
+                                                .emailAddressControllerValidator
+                                                .asValidator(context),
                                           ),
                                         ),
                                         Padding(
@@ -602,8 +616,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               EdgeInsetsDirectional.fromSTEB(
                                                   0, 12, 0, 0),
                                           child: TextFormField(
-                                            controller: passwordController,
-                                            obscureText: !passwordVisibility,
+                                            controller:
+                                                _model.passwordController,
+                                            obscureText:
+                                                !_model.passwordVisibility,
                                             decoration: InputDecoration(
                                               labelText: 'Password',
                                               labelStyle:
@@ -667,13 +683,15 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                       .fromSTEB(20, 24, 20, 24),
                                               suffixIcon: InkWell(
                                                 onTap: () => setState(
-                                                  () => passwordVisibility =
-                                                      !passwordVisibility,
+                                                  () => _model
+                                                          .passwordVisibility =
+                                                      !_model
+                                                          .passwordVisibility,
                                                 ),
                                                 focusNode: FocusNode(
                                                     skipTraversal: true),
                                                 child: Icon(
-                                                  passwordVisibility
+                                                  _model.passwordVisibility
                                                       ? Icons
                                                           .visibility_outlined
                                                       : Icons
@@ -691,6 +709,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            validator: _model
+                                                .passwordControllerValidator
+                                                .asValidator(context),
                                           ),
                                         ),
                                         Padding(
@@ -698,10 +719,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               EdgeInsetsDirectional.fromSTEB(
                                                   0, 12, 0, 0),
                                           child: TextFormField(
-                                            controller:
-                                                passwordConfirmController,
-                                            obscureText:
-                                                !passwordConfirmVisibility,
+                                            controller: _model
+                                                .passwordConfirmController,
+                                            obscureText: !_model
+                                                .passwordConfirmVisibility,
                                             decoration: InputDecoration(
                                               labelText: 'Confirm Password',
                                               labelStyle:
@@ -765,13 +786,15 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                       .fromSTEB(20, 24, 20, 24),
                                               suffixIcon: InkWell(
                                                 onTap: () => setState(
-                                                  () => passwordConfirmVisibility =
-                                                      !passwordConfirmVisibility,
+                                                  () => _model
+                                                          .passwordConfirmVisibility =
+                                                      !_model
+                                                          .passwordConfirmVisibility,
                                                 ),
                                                 focusNode: FocusNode(
                                                     skipTraversal: true),
                                                 child: Icon(
-                                                  passwordConfirmVisibility
+                                                  _model.passwordConfirmVisibility
                                                       ? Icons
                                                           .visibility_outlined
                                                       : Icons
@@ -789,6 +812,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.normal,
                                                 ),
+                                            validator: _model
+                                                .passwordConfirmControllerValidator
+                                                .asValidator(context),
                                           ),
                                         ),
                                         Padding(
@@ -800,9 +826,11 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               logFirebaseEvent(
                                                   'LOGIN_PAGE_CREATE_ACCOUNT_BTN_ON_TAP');
                                               logFirebaseEvent('Button_auth');
-                                              if (passwordController?.text !=
-                                                  passwordConfirmController
-                                                      ?.text) {
+                                              if (_model.passwordController
+                                                      .text !=
+                                                  _model
+                                                      .passwordConfirmController
+                                                      .text) {
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(
                                                   SnackBar(
@@ -817,8 +845,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                                               final user =
                                                   await createAccountWithEmail(
                                                 context,
-                                                emailAddressController!.text,
-                                                passwordController!.text,
+                                                _model.emailAddressController
+                                                    .text,
+                                                _model.passwordController.text,
                                               );
                                               if (user == null) {
                                                 return;
@@ -829,9 +858,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                 context,
                                                 MaterialPageRoute(
                                                   builder: (context) =>
-                                                      NavBarPage(
-                                                          initialPage:
-                                                              'Browse'),
+                                                      PushNotificationsHandler(
+                                                    child: NavBarPage(
+                                                        initialPage: 'Browse'),
+                                                  ),
                                                 ),
                                                 (r) => false,
                                               );
@@ -920,9 +950,11 @@ class _LoginWidgetState extends State<LoginWidget> {
                                                     context,
                                                     MaterialPageRoute(
                                                       builder: (context) =>
-                                                          NavBarPage(
-                                                              initialPage:
-                                                                  'Browse'),
+                                                          PushNotificationsHandler(
+                                                        child: NavBarPage(
+                                                            initialPage:
+                                                                'Browse'),
+                                                      ),
                                                     ),
                                                     (r) => false,
                                                   );

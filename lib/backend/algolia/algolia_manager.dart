@@ -28,6 +28,7 @@ class FFAlgoliaManager {
       : algolia = Algolia.init(
           applicationId: kAlgoliaApplicationId,
           apiKey: kAlgoliaApiKey,
+          extraUserAgents: ['FlutterFlow_3.1.0'],
         );
   final Algolia algolia;
 

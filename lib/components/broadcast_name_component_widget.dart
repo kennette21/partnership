@@ -3,7 +3,11 @@ import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'broadcast_name_component_model.dart';
+export 'broadcast_name_component_model.dart';
 
 class BroadcastNameComponentWidget extends StatefulWidget {
   const BroadcastNameComponentWidget({Key? key}) : super(key: key);
@@ -15,18 +19,27 @@ class BroadcastNameComponentWidget extends StatefulWidget {
 
 class _BroadcastNameComponentWidgetState
     extends State<BroadcastNameComponentWidget> {
-  TextEditingController? textController;
+  late BroadcastNameComponentModel _model;
+
+  @override
+  void setState(VoidCallback callback) {
+    super.setState(callback);
+    _model.onUpdate();
+  }
 
   @override
   void initState() {
     super.initState();
-    textController = TextEditingController();
+    _model = createModel(context, () => BroadcastNameComponentModel());
+
+    _model.textController ??= TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
   void dispose() {
-    textController?.dispose();
+    _model.maybeDispose();
+
     super.dispose();
   }
 
@@ -44,7 +57,7 @@ class _BroadcastNameComponentWidgetState
           Padding(
             padding: EdgeInsetsDirectional.fromSTEB(16, 24, 16, 24),
             child: TextFormField(
-              controller: textController,
+              controller: _model.textController,
               autofocus: true,
               obscureText: false,
               decoration: InputDecoration(
@@ -60,7 +73,7 @@ class _BroadcastNameComponentWidgetState
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(
-                    color: FlutterFlowTheme.of(context).primaryText,
+                    color: Color(0x00000000),
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(8),
@@ -81,6 +94,7 @@ class _BroadcastNameComponentWidgetState
                 ),
               ),
               style: FlutterFlowTheme.of(context).bodyText1,
+              validator: _model.textControllerValidator.asValidator(context),
             ),
           ),
           Padding(
@@ -98,7 +112,7 @@ class _BroadcastNameComponentWidgetState
                     context,
                     MaterialPageRoute(
                       builder: (context) => BroadcastPageWidget(
-                        videoName: textController!.text,
+                        videoName: _model.textController.text,
                       ),
                     ),
                   );

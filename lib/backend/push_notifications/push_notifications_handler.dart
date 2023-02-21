@@ -5,6 +5,7 @@ import 'serialization_util.dart';
 import '../backend.dart';
 import '../../flutter_flow/flutter_flow_theme.dart';
 import '../../flutter_flow/flutter_flow_util.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
@@ -79,7 +80,7 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
       ? Container(
           color: Colors.transparent,
           child: Image.asset(
-            'assets/images/Partnership_Logo_Dark.svg',
+            'assets/images/Splash_Logo.png',
             fit: BoxFit.cover,
           ),
         )
@@ -88,8 +89,8 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
 
 final pageBuilderMap = <String, Future<Widget> Function(Map<String, dynamic>)>{
   'Login': (data) async => LoginWidget(),
-  'Profile': (data) async => NavBarPage(initialPage: 'Profile'),
   'EditProfile': (data) async => EditProfileWidget(),
+  'Profile': (data) async => NavBarPage(initialPage: 'Profile'),
   'Project': (data) async => ProjectWidget(
         projectRef: getParameter(data, 'projectRef'),
       ),

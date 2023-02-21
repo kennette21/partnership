@@ -5,7 +5,11 @@ import '../flutter_flow/chat/index.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'all_chats_page_model.dart';
+export 'all_chats_page_model.dart';
 
 class AllChatsPageWidget extends StatefulWidget {
   const AllChatsPageWidget({Key? key}) : super(key: key);
@@ -15,14 +19,25 @@ class AllChatsPageWidget extends StatefulWidget {
 }
 
 class _AllChatsPageWidgetState extends State<AllChatsPageWidget> {
+  late AllChatsPageModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => AllChatsPageModel());
+
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'AllChatsPage'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -64,8 +79,9 @@ class _AllChatsPageWidgetState extends State<AllChatsPageWidget> {
                       child: SizedBox(
                         width: 50,
                         height: 50,
-                        child: CircularProgressIndicator(
+                        child: SpinKitCubeGrid(
                           color: FlutterFlowTheme.of(context).primaryColor,
+                          size: 50,
                         ),
                       ),
                     );

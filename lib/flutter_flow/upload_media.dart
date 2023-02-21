@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime_type/mime_type.dart';
+import 'package:video_player/video_player.dart';
 
 import '../auth/auth_util.dart';
 import 'flutter_flow_util.dart';
@@ -13,9 +14,25 @@ import 'flutter_flow_util.dart';
 const allowedFormats = {'image/png', 'image/jpeg', 'video/mp4', 'image/gif'};
 
 class SelectedMedia {
-  const SelectedMedia(this.storagePath, this.bytes);
+  const SelectedMedia({
+    this.storagePath = '',
+    this.filePath,
+    required this.bytes,
+    this.dimensions,
+  });
   final String storagePath;
+  final String? filePath;
   final Uint8List bytes;
+  final MediaDimensions? dimensions;
+}
+
+class MediaDimensions {
+  const MediaDimensions({
+    this.height,
+    this.width,
+  });
+  final double? height;
+  final double? width;
 }
 
 enum MediaSource {
@@ -26,6 +43,7 @@ enum MediaSource {
 
 Future<List<SelectedMedia>?> selectMediaWithSourceBottomSheet({
   required BuildContext context,
+  String? storageFolderPath,
   double? maxWidth,
   double? maxHeight,
   int? imageQuality,
@@ -34,6 +52,7 @@ Future<List<SelectedMedia>?> selectMediaWithSourceBottomSheet({
   String pickerFontFamily = 'Roboto',
   Color textColor = const Color(0xFF111417),
   Color backgroundColor = const Color(0xFFF5F5F5),
+  bool includeDimensions = false,
 }) async {
   final createUploadMediaListTile =
       (String label, MediaSource mediaSource) => ListTile(
@@ -114,22 +133,26 @@ Future<List<SelectedMedia>?> selectMediaWithSourceBottomSheet({
     return null;
   }
   return selectMedia(
+    storageFolderPath: storageFolderPath,
     maxWidth: maxWidth,
     maxHeight: maxHeight,
     imageQuality: imageQuality,
     isVideo: mediaSource == MediaSource.videoGallery ||
         (mediaSource == MediaSource.camera && allowVideo && !allowPhoto),
     mediaSource: mediaSource,
+    includeDimensions: includeDimensions,
   );
 }
 
 Future<List<SelectedMedia>?> selectMedia({
+  String? storageFolderPath,
   double? maxWidth,
   double? maxHeight,
   int? imageQuality,
   bool isVideo = false,
   MediaSource mediaSource = MediaSource.camera,
   bool multiImage = false,
+  bool includeDimensions = false,
 }) async {
   final picker = ImagePicker();
 
@@ -147,8 +170,18 @@ Future<List<SelectedMedia>?> selectMedia({
       final index = e.key;
       final media = e.value;
       final mediaBytes = await media.readAsBytes();
-      final path = storagePath(currentUserUid, media.name, false, index);
-      return SelectedMedia(path, mediaBytes);
+      final path = _getStoragePath(storageFolderPath, media.name, false, index);
+      final dimensions = includeDimensions
+          ? isVideo
+              ? _getVideoDimensions(media.path)
+              : _getImageDimensions(mediaBytes)
+          : null;
+      return SelectedMedia(
+        storagePath: path,
+        filePath: media.path,
+        bytes: mediaBytes,
+        dimensions: await dimensions,
+      );
     }));
   }
 
@@ -168,8 +201,20 @@ Future<List<SelectedMedia>?> selectMedia({
   if (mediaBytes == null) {
     return null;
   }
-  final path = storagePath(currentUserUid, pickedMedia!.name, isVideo);
-  return [SelectedMedia(path, mediaBytes)];
+  final path = _getStoragePath(storageFolderPath, pickedMedia!.name, isVideo);
+  final dimensions = includeDimensions
+      ? isVideo
+          ? _getVideoDimensions(pickedMedia.path)
+          : _getImageDimensions(mediaBytes)
+      : null;
+  return [
+    SelectedMedia(
+      storagePath: path,
+      filePath: pickedMedia.path,
+      bytes: mediaBytes,
+      dimensions: await dimensions,
+    ),
+  ];
 }
 
 bool validateFileFormat(String filePath, BuildContext context) {
@@ -185,6 +230,7 @@ bool validateFileFormat(String filePath, BuildContext context) {
 }
 
 Future<SelectedMedia?> selectFile({
+  String? storageFolderPath,
   List<String> allowedExtensions = const ['pdf'],
 }) async {
   final pickedFiles = await FilePicker.platform.pickFiles(
@@ -200,22 +246,51 @@ Future<SelectedMedia?> selectFile({
   if (file.bytes == null) {
     return null;
   }
-  final path = storagePath(currentUserUid, file.name, false);
-  return SelectedMedia(path, file.bytes!);
+  final storagePath = _getStoragePath(storageFolderPath, file.name, false);
+  return SelectedMedia(
+    storagePath: storagePath,
+    filePath: isWeb ? null : file.path,
+    bytes: file.bytes!,
+  );
 }
 
-String storagePath(String uid, String filePath, bool isVideo, [int? index]) {
+Future<MediaDimensions> _getImageDimensions(Uint8List mediaBytes) async {
+  final image = await decodeImageFromList(mediaBytes);
+  return MediaDimensions(
+    width: image.width.toDouble(),
+    height: image.height.toDouble(),
+  );
+}
+
+Future<MediaDimensions> _getVideoDimensions(String path) async {
+  final VideoPlayerController videoPlayerController =
+      VideoPlayerController.asset(path);
+  await videoPlayerController.initialize();
+  final size = videoPlayerController.value.size;
+  return MediaDimensions(width: size.width, height: size.height);
+}
+
+String _getStoragePath(
+  String? pathPrefix,
+  String filePath,
+  bool isVideo, [
+  int? index,
+]) {
+  pathPrefix ??= _firebasePathPrefix();
+  pathPrefix = _removeTrailingSlash(pathPrefix);
   final timestamp = DateTime.now().microsecondsSinceEpoch;
   // Workaround fixed by https://github.com/flutter/plugins/pull/3685
   // (not yet in stable).
   final ext = isVideo ? 'mp4' : filePath.split('.').last;
   final indexStr = index != null ? '_$index' : '';
-  return 'users/$uid/uploads/$timestamp$indexStr.$ext';
+  return '$pathPrefix/$timestamp$indexStr.$ext';
 }
 
-String signatureStoragePath(String uid) {
+String getSignatureStoragePath([String? pathPrefix]) {
+  pathPrefix ??= _firebasePathPrefix();
+  pathPrefix = _removeTrailingSlash(pathPrefix);
   final timestamp = DateTime.now().microsecondsSinceEpoch;
-  return 'users/$uid/uploads/signature_$timestamp.png';
+  return '$pathPrefix/signature_$timestamp.png';
 }
 
 void showUploadMessage(BuildContext context, String message,
@@ -237,3 +312,9 @@ void showUploadMessage(BuildContext context, String message,
       ),
     );
 }
+
+String? _removeTrailingSlash(String? path) => path != null && path.endsWith('/')
+    ? path.substring(0, path.length - 1)
+    : path;
+
+String _firebasePathPrefix() => 'users/$currentUserUid/uploads';

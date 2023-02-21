@@ -2,7 +2,11 @@ import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'stream_help_model.dart';
+export 'stream_help_model.dart';
 
 class StreamHelpWidget extends StatefulWidget {
   const StreamHelpWidget({Key? key}) : super(key: key);
@@ -12,13 +16,26 @@ class StreamHelpWidget extends StatefulWidget {
 }
 
 class _StreamHelpWidgetState extends State<StreamHelpWidget> {
+  late StreamHelpModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => StreamHelpModel());
+
     logFirebaseEvent('screen_view', parameters: {'screen_name': 'StreamHelp'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    _unfocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -62,7 +79,7 @@ class _StreamHelpWidgetState extends State<StreamHelpWidget> {
           ),
           body: SafeArea(
             child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
+              onTap: () => FocusScope.of(context).requestFocus(_unfocusNode),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [

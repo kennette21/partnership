@@ -16,10 +16,14 @@ import 'lat_lng.dart';
 export 'keep_alive_wrapper.dart';
 export 'lat_lng.dart';
 export 'place.dart';
+export 'uploaded_file.dart';
+export 'flutter_flow_model.dart';
 export 'dart:math' show min, max;
+export 'dart:typed_data' show Uint8List;
 export 'dart:convert' show jsonEncode, jsonDecode;
 export 'package:intl/intl.dart';
-export 'package:cloud_firestore/cloud_firestore.dart' show DocumentReference;
+export 'package:cloud_firestore/cloud_firestore.dart'
+    show DocumentReference, FirebaseFirestore;
 export 'package:page_transition/page_transition.dart';
 export '../backend/firebase_analytics/analytics.dart';
 
@@ -154,9 +158,22 @@ dynamic getJsonField(
   return isForList && value is! Iterable ? [value] : value;
 }
 
+Rect? getWidgetBoundingBox(BuildContext context) {
+  try {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    return renderBox!.localToGlobal(Offset.zero) & renderBox.size;
+  } catch (_) {
+    return null;
+  }
+}
+
 bool get isAndroid => !kIsWeb && Platform.isAndroid;
 bool get isiOS => !kIsWeb && Platform.isIOS;
 bool get isWeb => kIsWeb;
+
+const kMobileWidthCutoff = 479.0;
+bool isMobileWidth(BuildContext context) =>
+    MediaQuery.of(context).size.width < kMobileWidthCutoff;
 bool responsiveVisibility({
   required BuildContext context,
   bool phone = true,
@@ -165,7 +182,7 @@ bool responsiveVisibility({
   bool desktop = true,
 }) {
   final width = MediaQuery.of(context).size.width;
-  if (width < 479) {
+  if (width < kMobileWidthCutoff) {
     return phone;
   } else if (width < 767) {
     return tablet;
@@ -180,7 +197,20 @@ const kTextValidatorUsernameRegex = r'^[a-zA-Z][a-zA-Z0-9_-]{2,16}$';
 const kTextValidatorEmailRegex =
     r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$";
 const kTextValidatorWebsiteRegex =
-    r'(https?:\/\/)?(www\.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)|(https?:\/\/)?(www\.)?(?!ww)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)';
+    r'(https?:\/\/)?(www\.)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)|(https?:\/\/)?(www\.)?(?!ww)[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,10}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)';
+
+extension FFTextEditingControllerExt on TextEditingController? {
+  String get text => this == null ? '' : this!.text;
+  set text(String newText) => this?.text = newText;
+}
+
+extension IterableExt<T> on Iterable<T> {
+  List<S> mapIndexed<S>(S Function(int, T) func) => toList()
+      .asMap()
+      .map((index, value) => MapEntry(index, func(index, value)))
+      .values
+      .toList();
+}
 
 extension StringDocRef on String {
   DocumentReference get ref => FirebaseFirestore.instance.doc(this);
@@ -227,4 +257,8 @@ extension FFStringExt on String {
       maxChars != null && length > maxChars
           ? replaceRange(maxChars, null, replacement)
           : this;
+}
+
+extension ListFilterExt<T> on Iterable<T?> {
+  List<T> get withoutNulls => where((s) => s != null).map((e) => e!).toList();
 }

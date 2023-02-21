@@ -3,7 +3,11 @@ import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'edit_profile_prompt_model.dart';
+export 'edit_profile_prompt_model.dart';
 
 class EditProfilePromptWidget extends StatefulWidget {
   const EditProfilePromptWidget({
@@ -19,11 +23,27 @@ class EditProfilePromptWidget extends StatefulWidget {
 }
 
 class _EditProfilePromptWidgetState extends State<EditProfilePromptWidget> {
+  late EditProfilePromptModel _model;
+
+  @override
+  void setState(VoidCallback callback) {
+    super.setState(callback);
+    _model.onUpdate();
+  }
+
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => EditProfilePromptModel());
 
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.maybeDispose();
+
+    super.dispose();
   }
 
   @override

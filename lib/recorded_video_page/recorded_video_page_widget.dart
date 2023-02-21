@@ -2,7 +2,11 @@ import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'recorded_video_page_model.dart';
+export 'recorded_video_page_model.dart';
 
 class RecordedVideoPageWidget extends StatefulWidget {
   const RecordedVideoPageWidget({Key? key}) : super(key: key);
@@ -13,14 +17,27 @@ class RecordedVideoPageWidget extends StatefulWidget {
 }
 
 class _RecordedVideoPageWidgetState extends State<RecordedVideoPageWidget> {
+  late RecordedVideoPageModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => RecordedVideoPageModel());
+
     logFirebaseEvent('screen_view',
         parameters: {'screen_name': 'RecordedVideoPage'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    _unfocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -50,7 +67,7 @@ class _RecordedVideoPageWidgetState extends State<RecordedVideoPageWidget> {
           ),
           body: SafeArea(
             child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
+              onTap: () => FocusScope.of(context).requestFocus(_unfocusNode),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [

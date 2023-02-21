@@ -7,7 +7,11 @@ import '../flutter_flow/flutter_flow_widgets.dart';
 import '../live_video_page/live_video_page_widget.dart';
 import '../recorded_video_page/recorded_video_page_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'streams_page_model.dart';
+export 'streams_page_model.dart';
 
 class StreamsPageWidget extends StatefulWidget {
   const StreamsPageWidget({Key? key}) : super(key: key);
@@ -17,13 +21,26 @@ class StreamsPageWidget extends StatefulWidget {
 }
 
 class _StreamsPageWidgetState extends State<StreamsPageWidget> {
+  late StreamsPageModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => StreamsPageModel());
+
     logFirebaseEvent('screen_view', parameters: {'screen_name': 'StreamsPage'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    _unfocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -77,7 +94,7 @@ class _StreamsPageWidgetState extends State<StreamsPageWidget> {
           ),
           body: SafeArea(
             child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
+              onTap: () => FocusScope.of(context).requestFocus(_unfocusNode),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -93,8 +110,9 @@ class _StreamsPageWidgetState extends State<StreamsPageWidget> {
                           child: SizedBox(
                             width: 50,
                             height: 50,
-                            child: CircularProgressIndicator(
+                            child: SpinKitCubeGrid(
                               color: FlutterFlowTheme.of(context).primaryColor,
+                              size: 50,
                             ),
                           ),
                         );

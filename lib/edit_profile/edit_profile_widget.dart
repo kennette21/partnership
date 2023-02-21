@@ -9,7 +9,11 @@ import '../flutter_flow/flutter_flow_widgets.dart';
 import '../flutter_flow/upload_media.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'edit_profile_model.dart';
+export 'edit_profile_model.dart';
 
 class EditProfileWidget extends StatefulWidget {
   const EditProfileWidget({Key? key}) : super(key: key);
@@ -19,27 +23,27 @@ class EditProfileWidget extends StatefulWidget {
 }
 
 class _EditProfileWidgetState extends State<EditProfileWidget> {
-  bool isMediaUploading = false;
-  String uploadedFileUrl = '';
+  late EditProfileModel _model;
 
-  TextEditingController? displayNameController;
-  TextEditingController? bioController;
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
-    bioController = TextEditingController(
-        text: valueOrDefault(currentUserDocument?.bio, ''));
-    displayNameController = TextEditingController(text: currentUserDisplayName);
+    _model = createModel(context, () => EditProfileModel());
+
     logFirebaseEvent('screen_view', parameters: {'screen_name': 'EditProfile'});
+    _model.displayNameController ??=
+        TextEditingController(text: currentUserDisplayName);
+    _model.bioController ??= TextEditingController(
+        text: valueOrDefault(currentUserDocument?.bio, ''));
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
   void dispose() {
-    bioController?.dispose();
-    displayNameController?.dispose();
+    _model.dispose();
+
     super.dispose();
   }
 
@@ -69,8 +73,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                 logFirebaseEvent('IconButton_backend_call');
 
                 final usersUpdateData = createUsersRecordData(
-                  bio: bioController!.text,
-                  displayName: displayNameController!.text,
+                  bio: _model.bioController.text,
+                  displayName: _model.displayNameController.text,
                 );
                 await currentUserReference!.update(usersUpdateData);
                 logFirebaseEvent('IconButton_navigate_back');
@@ -108,7 +112,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                             shape: BoxShape.circle,
                           ),
                           child: AuthUserStreamWidget(
-                            child: Container(
+                            builder: (context) => Container(
                               width: 90,
                               height: 90,
                               clipBehavior: Clip.antiAlias,
@@ -135,7 +139,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           onPressed: () async {
                             logFirebaseEvent(
                                 'EDIT_PROFILE_CHANGE_PHOTO_BTN_ON_TAP');
-                            logFirebaseEvent('Button_upload_photo_video');
+                            logFirebaseEvent('Button_upload_media_to_firebase');
                             final selectedMedia =
                                 await selectMediaWithSourceBottomSheet(
                               context: context,
@@ -144,7 +148,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                             if (selectedMedia != null &&
                                 selectedMedia.every((m) => validateFileFormat(
                                     m.storagePath, context))) {
-                              setState(() => isMediaUploading = true);
+                              setState(() => _model.isMediaUploading = true);
+                              var selectedUploadedFiles = <FFUploadedFile>[];
                               var downloadUrls = <String>[];
                               try {
                                 showUploadMessage(
@@ -152,6 +157,15 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                                   'Uploading file...',
                                   showLoading: true,
                                 );
+                                selectedUploadedFiles = selectedMedia
+                                    .map((m) => FFUploadedFile(
+                                          name: m.storagePath.split('/').last,
+                                          bytes: m.bytes,
+                                          height: m.dimensions?.height,
+                                          width: m.dimensions?.width,
+                                        ))
+                                    .toList();
+
                                 downloadUrls = (await Future.wait(
                                   selectedMedia.map(
                                     (m) async => await uploadData(
@@ -164,11 +178,16 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                               } finally {
                                 ScaffoldMessenger.of(context)
                                     .hideCurrentSnackBar();
-                                isMediaUploading = false;
+                                _model.isMediaUploading = false;
                               }
-                              if (downloadUrls.length == selectedMedia.length) {
-                                setState(
-                                    () => uploadedFileUrl = downloadUrls.first);
+                              if (selectedUploadedFiles.length ==
+                                      selectedMedia.length &&
+                                  downloadUrls.length == selectedMedia.length) {
+                                setState(() {
+                                  _model.uploadedLocalFile =
+                                      selectedUploadedFiles.first;
+                                  _model.uploadedFileUrl = downloadUrls.first;
+                                });
                                 showUploadMessage(context, 'Success!');
                               } else {
                                 setState(() {});
@@ -181,7 +200,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                             logFirebaseEvent('Button_backend_call');
 
                             final usersUpdateData = createUsersRecordData(
-                              photoUrl: uploadedFileUrl,
+                              photoUrl: _model.uploadedFileUrl,
                             );
                             await currentUserReference!.update(usersUpdateData);
                           },
@@ -213,8 +232,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
                     child: AuthUserStreamWidget(
-                      child: TextFormField(
-                        controller: displayNameController,
+                      builder: (context) => TextFormField(
+                        controller: _model.displayNameController,
                         obscureText: false,
                         decoration: InputDecoration(
                           labelText: 'Your Name',
@@ -231,8 +250,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: FlutterFlowTheme.of(context)
-                                  .primaryBackground,
+                              color: Color(0x00000000),
                               width: 2,
                             ),
                             borderRadius: BorderRadius.circular(8),
@@ -258,14 +276,16 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                               EdgeInsetsDirectional.fromSTEB(20, 24, 0, 24),
                         ),
                         style: FlutterFlowTheme.of(context).bodyText1,
+                        validator: _model.displayNameControllerValidator
+                            .asValidator(context),
                       ),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 12),
                     child: AuthUserStreamWidget(
-                      child: TextFormField(
-                        controller: bioController,
+                      builder: (context) => TextFormField(
+                        controller: _model.bioController,
                         obscureText: false,
                         decoration: InputDecoration(
                           labelStyle: FlutterFlowTheme.of(context).bodyText2,
@@ -281,8 +301,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: FlutterFlowTheme.of(context)
-                                  .primaryBackground,
+                              color: Color(0x00000000),
                               width: 2,
                             ),
                             borderRadius: BorderRadius.circular(8),
@@ -310,6 +329,8 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                         style: FlutterFlowTheme.of(context).bodyText1,
                         textAlign: TextAlign.start,
                         maxLines: 3,
+                        validator:
+                            _model.bioControllerValidator.asValidator(context),
                       ),
                     ),
                   ),
@@ -339,9 +360,10 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                                 child: SizedBox(
                                   width: 50,
                                   height: 50,
-                                  child: CircularProgressIndicator(
+                                  child: SpinKitCubeGrid(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryColor,
+                                    size: 50,
                                   ),
                                 ),
                               );
@@ -358,7 +380,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                                     listViewSkillsRecordList[listViewIndex];
                                 return EditableUserSkillRatingWidget(
                                   key: Key(
-                                      'EditableUserSkillRating_${listViewIndex}'),
+                                      'Keywvt_${listViewIndex}_of_${listViewSkillsRecordList.length}'),
                                   skillDoc: listViewSkillsRecord,
                                 );
                               },
@@ -373,7 +395,7 @@ class _EditProfileWidgetState extends State<EditProfileWidget> {
                     Padding(
                       padding: EdgeInsetsDirectional.fromSTEB(24, 0, 24, 0),
                       child: AuthUserStreamWidget(
-                        child: FFButtonWidget(
+                        builder: (context) => FFButtonWidget(
                           onPressed: () async {
                             logFirebaseEvent(
                                 'EDIT_PROFILE_BECOME_A_FOUNDER_BTN_ON_TAP');

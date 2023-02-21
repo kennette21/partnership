@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -49,5 +50,15 @@ List<String> getPartnerTypesFromRatings(
     return ["contribute", "mentor"];
   } else {
     return ["contribute", "grow", "?"];
+  }
+}
+
+String getCompletenessStringFromNumber(double completeness) {
+  if (completeness <= 15) {
+    return 'idea';
+  } else if (completeness > 15 && completeness <= 75) {
+    return 'building';
+  } else {
+    return 'live';
   }
 }

@@ -12,8 +12,12 @@ import 'package:flutter/services.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'broadcast_page_model.dart';
+export 'broadcast_page_model.dart';
 
 class BroadcastPageWidget extends StatefulWidget {
   const BroadcastPageWidget({
@@ -28,6 +32,10 @@ class BroadcastPageWidget extends StatefulWidget {
 }
 
 class _BroadcastPageWidgetState extends State<BroadcastPageWidget> {
+  late BroadcastPageModel _model;
+
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
   String? muxBroadcastPlaybackUrl;
   bool muxBroadcastIsLive = false;
   LiveStreamController? muxBroadcastController;
@@ -44,24 +52,27 @@ class _BroadcastPageWidgetState extends State<BroadcastPageWidget> {
   final _stopwatch = Stopwatch();
   String? _durationString;
   Timer? _timer;
-  StreamsRecord? muxStreamOutput;
-  final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => BroadcastPageModel());
+
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'BroadcastPage'});
     if (Platform.isAndroid || Platform.isIOS) {
       _isSupportedPlatform = true;
       _initCamera();
     }
 
-    logFirebaseEvent('screen_view',
-        parameters: {'screen_name': 'BroadcastPage'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
   void dispose() {
+    _model.dispose();
+
+    _unfocusNode.dispose();
     _stopwatch.stop();
     _timer?.cancel();
     Wakelock.disable();
@@ -94,7 +105,7 @@ class _BroadcastPageWidgetState extends State<BroadcastPageWidget> {
           ),
           body: SafeArea(
             child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
+              onTap: () => FocusScope.of(context).requestFocus(_unfocusNode),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -181,8 +192,9 @@ class _BroadcastPageWidgetState extends State<BroadcastPageWidget> {
                         var streamsRecordReference =
                             StreamsRecord.collection.doc();
                         await streamsRecordReference.set(streamsCreateData);
-                        muxStreamOutput = StreamsRecord.getDocumentFromData(
-                            streamsCreateData, streamsRecordReference);
+                        _model.muxStreamOutput =
+                            StreamsRecord.getDocumentFromData(
+                                streamsCreateData, streamsRecordReference);
 
                         setState(() {});
                       },
@@ -195,7 +207,7 @@ class _BroadcastPageWidgetState extends State<BroadcastPageWidget> {
                         final streamsUpdateData = createStreamsRecordData(
                           isLive: false,
                         );
-                        await muxStreamOutput!.reference
+                        await _model.muxStreamOutput!.reference
                             .update(streamsUpdateData);
                         logFirebaseEvent('MuxBroadcast_navigate_back');
                         Navigator.pop(context);
