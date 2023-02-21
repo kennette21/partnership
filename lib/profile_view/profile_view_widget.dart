@@ -1,12 +1,18 @@
 import '../auth/auth_util.dart';
 import '../backend/backend.dart';
+import '../chat_page/chat_page_widget.dart';
 import '../flutter_flow/flutter_flow_icon_button.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
+import '../flutter_flow/flutter_flow_widgets.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'profile_view_model.dart';
+export 'profile_view_model.dart';
 
 class ProfileViewWidget extends StatefulWidget {
   const ProfileViewWidget({
@@ -21,13 +27,26 @@ class ProfileViewWidget extends StatefulWidget {
 }
 
 class _ProfileViewWidgetState extends State<ProfileViewWidget> {
+  late ProfileViewModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => ProfileViewModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'ProfileView'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    _unfocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -41,8 +60,9 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
             child: SizedBox(
               width: 50,
               height: 50,
-              child: CircularProgressIndicator(
+              child: SpinKitCubeGrid(
                 color: FlutterFlowTheme.of(context).primaryColor,
+                size: 50,
               ),
             ),
           );
@@ -68,6 +88,9 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                     size: 30,
                   ),
                   onPressed: () async {
+                    logFirebaseEvent(
+                        'PROFILE_VIEW_arrow_back_rounded_ICN_ON_T');
+                    logFirebaseEvent('IconButton_navigate_back');
                     Navigator.pop(context);
                   },
                 ),
@@ -77,13 +100,14 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
               ),
               body: SafeArea(
                 child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
+                  onTap: () =>
+                      FocusScope.of(context).requestFocus(_unfocusNode),
                   child: Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 20, 0, 0),
                     child: SingleChildScrollView(
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Container(
                             width: 120,
@@ -103,6 +127,43 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                             ),
                             textAlign: TextAlign.center,
                             style: FlutterFlowTheme.of(context).title3,
+                          ),
+                          FFButtonWidget(
+                            onPressed: () async {
+                              logFirebaseEvent(
+                                  'PROFILE_VIEW_PAGE_MESSAGE_BTN_ON_TAP');
+                              logFirebaseEvent('Button_navigate_to');
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChatPageWidget(
+                                    chatUser: profileViewUsersRecord,
+                                  ),
+                                ),
+                              );
+                            },
+                            text: 'Message',
+                            icon: Icon(
+                              Icons.message,
+                              size: 15,
+                            ),
+                            options: FFButtonOptions(
+                              width: 130,
+                              height: 40,
+                              color:
+                                  FlutterFlowTheme.of(context).secondaryColor,
+                              textStyle: FlutterFlowTheme.of(context)
+                                  .subtitle2
+                                  .override(
+                                    fontFamily: 'Poppins',
+                                    color: Colors.white,
+                                  ),
+                              borderSide: BorderSide(
+                                color: Colors.transparent,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                           Padding(
                             padding:
@@ -171,9 +232,10 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                                     child: SizedBox(
                                       width: 50,
                                       height: 50,
-                                      child: CircularProgressIndicator(
+                                      child: SpinKitCubeGrid(
                                         color: FlutterFlowTheme.of(context)
                                             .primaryColor,
+                                        size: 50,
                                       ),
                                     ),
                                   );
@@ -201,10 +263,11 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                                             child: SizedBox(
                                               width: 50,
                                               height: 50,
-                                              child: CircularProgressIndicator(
+                                              child: SpinKitCubeGrid(
                                                 color:
                                                     FlutterFlowTheme.of(context)
                                                         .primaryColor,
+                                                size: 50,
                                               ),
                                             ),
                                           );
@@ -277,6 +340,10 @@ class _ProfileViewWidgetState extends State<ProfileViewWidget> {
                                   size: 30,
                                 ),
                                 onPressed: () async {
+                                  logFirebaseEvent(
+                                      'PROFILE_VIEW_PAGE_CalendlyButton_ON_TAP');
+                                  logFirebaseEvent(
+                                      'CalendlyButton_launch_u_r_l');
                                   await launchURL(
                                       profileViewUsersRecord.calendar!);
                                 },

@@ -1,6 +1,7 @@
 import '../auth/auth_util.dart';
 import '../backend/backend.dart';
 import '../components/editable_proj_skill_rating_widget.dart';
+import '../components/project_completeness_widget.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
@@ -9,7 +10,11 @@ import '../stream_help/stream_help_widget.dart';
 import '../flutter_flow/custom_functions.dart' as functions;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'create_project_model.dart';
+export 'create_project_model.dart';
 
 class CreateProjectWidget extends StatefulWidget {
   const CreateProjectWidget({
@@ -24,25 +29,26 @@ class CreateProjectWidget extends StatefulWidget {
 }
 
 class _CreateProjectWidgetState extends State<CreateProjectWidget> {
-  TextEditingController? descriptionController;
-  TextEditingController? titleController;
-  TextEditingController? keywordsController;
-  TextEditingController? streamLinkController;
+  late CreateProjectModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => CreateProjectModel());
 
+    logFirebaseEvent('screen_view',
+        parameters: {'screen_name': 'CreateProject'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
   void dispose() {
-    descriptionController?.dispose();
-    titleController?.dispose();
-    keywordsController?.dispose();
-    streamLinkController?.dispose();
+    _model.dispose();
+
+    _unfocusNode.dispose();
     super.dispose();
   }
 
@@ -57,8 +63,9 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
             child: SizedBox(
               width: 50,
               height: 50,
-              child: CircularProgressIndicator(
+              child: SpinKitCubeGrid(
                 color: FlutterFlowTheme.of(context).primaryColor,
+                size: 50,
               ),
             ),
           );
@@ -87,7 +94,8 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
               ),
               body: SafeArea(
                 child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
+                  onTap: () =>
+                      FocusScope.of(context).requestFocus(_unfocusNode),
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
@@ -108,7 +116,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                           padding:
                               EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
                           child: TextFormField(
-                            controller: titleController ??=
+                            controller: _model.titleController ??=
                                 TextEditingController(
                               text: createProjectProjectsRecord.title,
                             ),
@@ -128,8 +136,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: FlutterFlowTheme.of(context)
-                                      .primaryBackground,
+                                  color: Color(0x00000000),
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(8),
@@ -155,75 +162,119 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(20, 24, 0, 24),
                             ),
                             style: FlutterFlowTheme.of(context).bodyText1,
+                            validator: _model.titleControllerValidator
+                                .asValidator(context),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(20, 0, 20, 8),
-                          child: TextFormField(
-                            controller: descriptionController ??=
-                                TextEditingController(
-                              text: createProjectProjectsRecord.description,
+                          child: FutureBuilder<List<DefaultsRecord>>(
+                            future: queryDefaultsRecordOnce(
+                              queryBuilder: (defaultsRecord) =>
+                                  defaultsRecord.where('type',
+                                      isEqualTo: 'project-description'),
+                              singleRecord: true,
                             ),
-                            obscureText: false,
-                            decoration: InputDecoration(
-                              labelText: 'Description',
-                              labelStyle: FlutterFlowTheme.of(context)
-                                  .bodyText2
-                                  .override(
-                                    fontFamily: 'Poppins',
-                                    fontSize: 14,
+                            builder: (context, snapshot) {
+                              // Customize what your widget looks like when it's loading.
+                              if (!snapshot.hasData) {
+                                return Center(
+                                  child: SizedBox(
+                                    width: 50,
+                                    height: 50,
+                                    child: SpinKitCubeGrid(
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryColor,
+                                      size: 50,
+                                    ),
                                   ),
-                              hintStyle: FlutterFlowTheme.of(context).bodyText2,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: FlutterFlowTheme.of(context)
-                                      .primaryBackground,
-                                  width: 2,
+                                );
+                              }
+                              List<DefaultsRecord>
+                                  descriptionDefaultsRecordList =
+                                  snapshot.data!;
+                              final descriptionDefaultsRecord =
+                                  descriptionDefaultsRecordList.isNotEmpty
+                                      ? descriptionDefaultsRecordList.first
+                                      : null;
+                              return TextFormField(
+                                controller: _model.descriptionController ??=
+                                    TextEditingController(
+                                  text: createProjectProjectsRecord
+                                                  .description !=
+                                              null &&
+                                          createProjectProjectsRecord
+                                                  .description !=
+                                              ''
+                                      ? createProjectProjectsRecord.description
+                                      : descriptionDefaultsRecord!.value,
                                 ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: FlutterFlowTheme.of(context)
-                                      .primaryBackground,
-                                  width: 2,
+                                obscureText: false,
+                                decoration: InputDecoration(
+                                  labelText: 'Description',
+                                  labelStyle: FlutterFlowTheme.of(context)
+                                      .bodyText2
+                                      .override(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                      ),
+                                  hintStyle:
+                                      FlutterFlowTheme.of(context).bodyText2,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryBackground,
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0x00000000),
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  errorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0x00000000),
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  focusedErrorBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0x00000000),
+                                      width: 2,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  filled: true,
+                                  fillColor: FlutterFlowTheme.of(context)
+                                      .secondaryBackground,
+                                  contentPadding:
+                                      EdgeInsetsDirectional.fromSTEB(
+                                          20, 24, 0, 24),
                                 ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0x00000000),
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0x00000000),
-                                  width: 2,
-                                ),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              filled: true,
-                              fillColor: FlutterFlowTheme.of(context)
-                                  .secondaryBackground,
-                              contentPadding:
-                                  EdgeInsetsDirectional.fromSTEB(20, 24, 0, 24),
-                            ),
-                            style:
-                                FlutterFlowTheme.of(context).bodyText1.override(
+                                style: FlutterFlowTheme.of(context)
+                                    .bodyText1
+                                    .override(
                                       fontFamily: 'Poppins',
                                       fontSize: 12,
                                     ),
-                            maxLines: 7,
-                            keyboardType: TextInputType.multiline,
+                                maxLines: 7,
+                                keyboardType: TextInputType.multiline,
+                                validator: _model.descriptionControllerValidator
+                                    .asValidator(context),
+                              );
+                            },
                           ),
                         ),
                         Padding(
                           padding:
                               EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
                           child: TextFormField(
-                            controller: keywordsController ??=
+                            controller: _model.keywordsController ??=
                                 TextEditingController(
                               text: functions.getStringFromKeywordArray(
                                   createProjectProjectsRecord.keywords!
@@ -245,8 +296,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: FlutterFlowTheme.of(context)
-                                      .primaryBackground,
+                                  color: Color(0x00000000),
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(8),
@@ -272,6 +322,43 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(20, 24, 0, 24),
                             ),
                             style: FlutterFlowTheme.of(context).bodyText1,
+                            validator: _model.keywordsControllerValidator
+                                .asValidator(context),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsetsDirectional.fromSTEB(8, 0, 0, 0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Text(
+                                'Completeness',
+                                style: FlutterFlowTheme.of(context).subtitle1,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Slider(
+                          activeColor:
+                              FlutterFlowTheme.of(context).primaryColor,
+                          inactiveColor: Color(0xFF9E9E9E),
+                          min: 0,
+                          max: 100,
+                          value: _model.sliderValue ??= valueOrDefault<double>(
+                            createProjectProjectsRecord.completeness,
+                            0.0,
+                          ),
+                          label: _model.sliderValue.toString(),
+                          divisions: 20,
+                          onChanged: (newValue) {
+                            setState(() => _model.sliderValue = newValue);
+                          },
+                        ),
+                        wrapWithModel(
+                          model: _model.projectCompletenessModel,
+                          updateCallback: () => setState(() {}),
+                          child: ProjectCompletenessWidget(
+                            completeness: _model.sliderValue,
                           ),
                         ),
                         Padding(
@@ -295,6 +382,10 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(20, 0, 20, 0),
                               child: InkWell(
                                 onTap: () async {
+                                  logFirebaseEvent(
+                                      'CREATE_PROJECT_StreamJustification_ON_TA');
+                                  logFirebaseEvent(
+                                      'StreamJustification_navigate_to');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -313,7 +404,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                               padding:
                                   EdgeInsetsDirectional.fromSTEB(20, 0, 20, 16),
                               child: TextFormField(
-                                controller: streamLinkController ??=
+                                controller: _model.streamLinkController ??=
                                     TextEditingController(
                                   text: createProjectProjectsRecord.stream,
                                 ),
@@ -334,8 +425,7 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   ),
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryBackground,
+                                      color: Color(0x00000000),
                                       width: 2,
                                     ),
                                     borderRadius: BorderRadius.circular(8),
@@ -362,6 +452,8 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                           20, 24, 0, 24),
                                 ),
                                 style: FlutterFlowTheme.of(context).bodyText1,
+                                validator: _model.streamLinkControllerValidator
+                                    .asValidator(context),
                               ),
                             ),
                           ],
@@ -389,9 +481,10 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   child: SizedBox(
                                     width: 50,
                                     height: 50,
-                                    child: CircularProgressIndicator(
+                                    child: SpinKitCubeGrid(
                                       color: FlutterFlowTheme.of(context)
                                           .primaryColor,
+                                      size: 50,
                                     ),
                                   ),
                                 );
@@ -410,6 +503,8 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                       listViewSkillsSkillsRecordList[
                                           listViewSkillsIndex];
                                   return EditableProjSkillRatingWidget(
+                                    key: Key(
+                                        'Key75d_${listViewSkillsIndex}_of_${listViewSkillsSkillsRecordList.length}'),
                                     skillDoc: listViewSkillsSkillsRecord,
                                     project: createProjectProjectsRecord,
                                   );
@@ -427,8 +522,12 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(0, 12, 0, 6),
                               child: FFButtonWidget(
                                 onPressed: () async {
+                                  logFirebaseEvent(
+                                      'CREATE_PROJECT_PAGE_DELETE_BTN_ON_TAP');
+                                  logFirebaseEvent('Button_backend_call');
                                   await createProjectProjectsRecord.reference
                                       .delete();
+                                  logFirebaseEvent('Button_navigate_to');
                                   await Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
@@ -462,22 +561,28 @@ class _CreateProjectWidgetState extends State<CreateProjectWidget> {
                                   EdgeInsetsDirectional.fromSTEB(20, 0, 20, 10),
                               child: FFButtonWidget(
                                 onPressed: () async {
+                                  logFirebaseEvent(
+                                      'CREATE_PROJECT_PAGE_DoneButton_ON_TAP');
+                                  logFirebaseEvent('DoneButton_backend_call');
+
                                   final projectsUpdateData = {
                                     ...createProjectsRecordData(
                                       description:
-                                          descriptionController?.text ?? '',
-                                      title: titleController?.text ?? '',
-                                      stream: streamLinkController?.text ?? '',
+                                          _model.descriptionController.text,
+                                      title: _model.titleController.text,
+                                      stream: _model.streamLinkController.text,
+                                      completeness: _model.sliderValue,
                                     ),
                                     'keywords':
                                         functions.getArrayFromKeywordString(
                                             valueOrDefault<String>(
-                                      keywordsController?.text ?? '',
+                                      _model.keywordsController.text,
                                       'fun',
                                     )),
                                   };
                                   await widget.projectRef!
                                       .update(projectsUpdateData);
+                                  logFirebaseEvent('DoneButton_navigate_to');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(

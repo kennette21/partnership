@@ -1,5 +1,6 @@
 import '../auth/auth_util.dart';
 import '../backend/backend.dart';
+import '../components/project_completeness_widget.dart';
 import '../components/skilltag_widget.dart';
 import '../create_project/create_project_widget.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
@@ -7,10 +8,16 @@ import '../flutter_flow/flutter_flow_util.dart';
 import '../flutter_flow/flutter_flow_widgets.dart';
 import '../profile_view/profile_view_widget.dart';
 import '../custom_code/widgets/index.dart' as custom_widgets;
+import '../flutter_flow/custom_functions.dart' as functions;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'project_model.dart';
+export 'project_model.dart';
 
 class ProjectWidget extends StatefulWidget {
   const ProjectWidget({
@@ -25,13 +32,26 @@ class ProjectWidget extends StatefulWidget {
 }
 
 class _ProjectWidgetState extends State<ProjectWidget> {
+  late ProjectModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final _unfocusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _model = createModel(context, () => ProjectModel());
 
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'Project'});
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _model.dispose();
+
+    _unfocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,8 +65,9 @@ class _ProjectWidgetState extends State<ProjectWidget> {
             child: SizedBox(
               width: 50,
               height: 50,
-              child: CircularProgressIndicator(
+              child: SpinKitCubeGrid(
                 color: FlutterFlowTheme.of(context).primaryColor,
+                size: 50,
               ),
             ),
           );
@@ -62,6 +83,9 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                 visible: projectProjectsRecord.founder == currentUserReference,
                 child: FloatingActionButton(
                   onPressed: () async {
+                    logFirebaseEvent(
+                        'PROJECT_FloatingActionButton_hoc7lr47_ON');
+                    logFirebaseEvent('FloatingActionButton_navigate_to');
                     await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -97,11 +121,12 @@ class _ProjectWidgetState extends State<ProjectWidget> {
               ),
               body: SafeArea(
                 child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
+                  onTap: () =>
+                      FocusScope.of(context).requestFocus(_unfocusNode),
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         StreamBuilder<List<SubscriptionsRecord>>(
                           stream: querySubscriptionsRecord(
@@ -120,9 +145,10 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                 child: SizedBox(
                                   width: 50,
                                   height: 50,
-                                  child: CircularProgressIndicator(
+                                  child: SpinKitCubeGrid(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryColor,
+                                    size: 50,
                                   ),
                                 ),
                               );
@@ -145,6 +171,10 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                         0, 10, 20, 10),
                                     child: FFButtonWidget(
                                       onPressed: () async {
+                                        logFirebaseEvent(
+                                            'PROJECT_PAGE_Following_ON_TAP');
+                                        logFirebaseEvent(
+                                            'Following_backend_call');
                                         await rowFollowSubscriptionsRecord!
                                             .reference
                                             .delete();
@@ -183,6 +213,10 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                         0, 10, 20, 10),
                                     child: FFButtonWidget(
                                       onPressed: () async {
+                                        logFirebaseEvent(
+                                            'PROJECT_PAGE_Follow_ON_TAP');
+                                        logFirebaseEvent('Follow_backend_call');
+
                                         final subscriptionsCreateData =
                                             createSubscriptionsRecordData(
                                           follower: currentUserReference,
@@ -228,180 +262,50 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                             children: [
                               Text(
                                 'Description',
-                                style: FlutterFlowTheme.of(context).bodyText2,
+                                style: FlutterFlowTheme.of(context).subtitle2,
                               ),
                             ],
                           ),
                         ),
                         Container(
                           width: double.infinity,
-                          constraints: BoxConstraints(
-                            maxHeight: 700,
-                          ),
                           decoration: BoxDecoration(
                             color: FlutterFlowTheme.of(context)
                                 .secondaryBackground,
                           ),
-                          child: Container(
-                            width: double.infinity,
-                            height: 500,
+                          child: Padding(
+                            padding: EdgeInsetsDirectional.fromSTEB(6, 0, 6, 0),
                             child: custom_widgets.MarkdownRenderer(
-                              width: double.infinity,
-                              height: 500,
+                              width: 100,
+                              height: 100,
                               data: projectProjectsRecord.description!,
                             ),
                           ),
                         ),
-                        if (projectProjectsRecord.stream != null &&
-                            projectProjectsRecord.stream != '')
-                          Column(
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: EdgeInsetsDirectional.fromSTEB(
-                                    20, 4, 20, 4),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  children: [
-                                    Text(
-                                      'StreamDetails',
-                                      style: FlutterFlowTheme.of(context)
-                                          .bodyText2,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsetsDirectional.fromSTEB(20, 0, 0, 0),
-                                child: FFButtonWidget(
-                                  onPressed: () async {
-                                    await launchURL(
-                                        projectProjectsRecord.stream!);
-                                  },
-                                  text: 'View stream',
-                                  options: FFButtonOptions(
-                                    width: 160,
-                                    height: 40,
-                                    color: FlutterFlowTheme.of(context)
-                                        .primaryColor,
-                                    textStyle: FlutterFlowTheme.of(context)
-                                        .subtitle2
-                                        .override(
-                                          fontFamily: 'Poppins',
-                                          color: Colors.white,
-                                        ),
-                                    borderSide: BorderSide(
-                                      color: Colors.transparent,
-                                      width: 1,
-                                    ),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
                         Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 4),
                           child: Row(
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               Text(
-                                'Skills In This Project',
-                                style: FlutterFlowTheme.of(context).bodyText2,
+                                'Completeness',
+                                style: FlutterFlowTheme.of(context).subtitle2,
                               ),
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(4, 4, 4, 0),
-                          child: FutureBuilder<List<RatingsRecord>>(
-                            future: queryRatingsRecordOnce(
-                              queryBuilder: (ratingsRecord) => ratingsRecord
-                                  .where('project',
-                                      isEqualTo: widget.projectRef)
-                                  .orderBy('value', descending: true),
-                            ),
-                            builder: (context, snapshot) {
-                              // Customize what your widget looks like when it's loading.
-                              if (!snapshot.hasData) {
-                                return Center(
-                                  child: SizedBox(
-                                    width: 50,
-                                    height: 50,
-                                    child: CircularProgressIndicator(
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryColor,
-                                    ),
-                                  ),
-                                );
-                              }
-                              List<RatingsRecord>
-                                  listViewSkillsRatingsRecordList =
-                                  snapshot.data!;
-                              return ListView.builder(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                itemCount:
-                                    listViewSkillsRatingsRecordList.length,
-                                itemBuilder: (context, listViewSkillsIndex) {
-                                  final listViewSkillsRatingsRecord =
-                                      listViewSkillsRatingsRecordList[
-                                          listViewSkillsIndex];
-                                  return StreamBuilder<SkillsRecord>(
-                                    stream: SkillsRecord.getDocument(
-                                        listViewSkillsRatingsRecord.skill!),
-                                    builder: (context, snapshot) {
-                                      // Customize what your widget looks like when it's loading.
-                                      if (!snapshot.hasData) {
-                                        return Center(
-                                          child: SizedBox(
-                                            width: 50,
-                                            height: 50,
-                                            child: CircularProgressIndicator(
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .primaryColor,
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                      final rowSkillsRecord = snapshot.data!;
-                                      return Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          SkilltagWidget(
-                                            value: rowSkillsRecord.name,
-                                            selected: true,
-                                          ),
-                                          RatingBarIndicator(
-                                            itemBuilder: (context, index) =>
-                                                Icon(
-                                              Icons.star_rounded,
-                                              color:
-                                                  FlutterFlowTheme.of(context)
-                                                      .tertiaryColor,
-                                            ),
-                                            direction: Axis.horizontal,
-                                            rating: listViewSkillsRatingsRecord
-                                                .value!
-                                                .toDouble(),
-                                            unratedColor: Color(0xFF9E9E9E),
-                                            itemCount: 3,
-                                            itemSize: 40,
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                              );
-                            },
+                        wrapWithModel(
+                          model: _model.projectCompletenessModel,
+                          updateCallback: () => setState(() {}),
+                          child: ProjectCompletenessWidget(
+                            completeness: projectProjectsRecord.completeness,
                           ),
+                        ),
+                        Divider(
+                          thickness: 2,
+                          indent: 12,
+                          endIndent: 12,
+                          color: FlutterFlowTheme.of(context).primaryBackground,
                         ),
                         StreamBuilder<UsersRecord>(
                           stream: UsersRecord.getDocument(
@@ -413,9 +317,10 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                 child: SizedBox(
                                   width: 50,
                                   height: 50,
-                                  child: CircularProgressIndicator(
+                                  child: SpinKitCubeGrid(
                                     color: FlutterFlowTheme.of(context)
                                         .primaryColor,
+                                    size: 50,
                                   ),
                                 ),
                               );
@@ -423,18 +328,19 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                             final columnUsersRecord = snapshot.data!;
                             return Column(
                               mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Padding(
                                   padding: EdgeInsetsDirectional.fromSTEB(
                                       20, 4, 20, 4),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
                                         'Founder',
                                         style: FlutterFlowTheme.of(context)
-                                            .bodyText2,
+                                            .subtitle2,
                                       ),
                                     ],
                                   ),
@@ -444,6 +350,9 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                       8, 0, 8, 0),
                                   child: InkWell(
                                     onTap: () async {
+                                      logFirebaseEvent(
+                                          'PROJECT_PAGE_Row_x5k6zunm_ON_TAP');
+                                      logFirebaseEvent('Row_navigate_to');
                                       await Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -456,10 +365,16 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                     },
                                     child: Row(
                                       mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
+                                        Text(
+                                          columnUsersRecord.displayName!,
+                                          style: FlutterFlowTheme.of(context)
+                                              .bodyText1,
+                                        ),
                                         Container(
-                                          width: 120,
-                                          height: 120,
+                                          width: 90,
+                                          height: 90,
                                           clipBehavior: Clip.antiAlias,
                                           decoration: BoxDecoration(
                                             shape: BoxShape.circle,
@@ -468,50 +383,620 @@ class _ProjectWidgetState extends State<ProjectWidget> {
                                             columnUsersRecord.photoUrl!,
                                           ),
                                         ),
-                                        Text(
-                                          columnUsersRecord.displayName!,
-                                          style: FlutterFlowTheme.of(context)
-                                              .bodyText1,
-                                        ),
                                       ],
                                     ),
                                   ),
                                 ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Padding(
-                                      padding: EdgeInsetsDirectional.fromSTEB(
-                                          20, 20, 20, 20),
-                                      child: FFButtonWidget(
-                                        onPressed: () async {
-                                          await launchURL(
-                                              columnUsersRecord.calendar!);
-                                        },
-                                        text: 'Join Project',
-                                        options: FFButtonOptions(
-                                          width: double.infinity,
-                                          height: 40,
-                                          color: FlutterFlowTheme.of(context)
-                                              .primaryColor,
-                                          textStyle:
-                                              FlutterFlowTheme.of(context)
-                                                  .subtitle2
-                                                  .override(
-                                                    fontFamily: 'Poppins',
-                                                    color: Colors.white,
-                                                  ),
-                                          borderSide: BorderSide(
-                                            color: Colors.transparent,
-                                            width: 1,
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      20, 4, 20, 4),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Skills',
+                                        style: FlutterFlowTheme.of(context)
+                                            .subtitle2,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      4, 4, 4, 0),
+                                  child: FutureBuilder<List<RatingsRecord>>(
+                                    future: queryRatingsRecordOnce(
+                                      queryBuilder: (ratingsRecord) =>
+                                          ratingsRecord
+                                              .where('project',
+                                                  isEqualTo: widget.projectRef)
+                                              .orderBy('value',
+                                                  descending: true),
+                                    ),
+                                    builder: (context, snapshot) {
+                                      // Customize what your widget looks like when it's loading.
+                                      if (!snapshot.hasData) {
+                                        return Center(
+                                          child: SizedBox(
+                                            width: 50,
+                                            height: 50,
+                                            child: SpinKitCubeGrid(
+                                              color:
+                                                  FlutterFlowTheme.of(context)
+                                                      .primaryColor,
+                                              size: 50,
+                                            ),
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                        );
+                                      }
+                                      List<RatingsRecord>
+                                          listViewSkillsRatingsRecordList =
+                                          snapshot.data!;
+                                      return ListView.builder(
+                                        padding: EdgeInsets.zero,
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.vertical,
+                                        itemCount:
+                                            listViewSkillsRatingsRecordList
+                                                .length,
+                                        itemBuilder:
+                                            (context, listViewSkillsIndex) {
+                                          final listViewSkillsRatingsRecord =
+                                              listViewSkillsRatingsRecordList[
+                                                  listViewSkillsIndex];
+                                          return StreamBuilder<SkillsRecord>(
+                                            stream: SkillsRecord.getDocument(
+                                                listViewSkillsRatingsRecord
+                                                    .skill!),
+                                            builder: (context, snapshot) {
+                                              // Customize what your widget looks like when it's loading.
+                                              if (!snapshot.hasData) {
+                                                return Center(
+                                                  child: SizedBox(
+                                                    width: 50,
+                                                    height: 50,
+                                                    child: SpinKitCubeGrid(
+                                                      color:
+                                                          FlutterFlowTheme.of(
+                                                                  context)
+                                                              .primaryColor,
+                                                      size: 50,
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+                                              final containerSkillsRecord =
+                                                  snapshot.data!;
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                  color: FlutterFlowTheme.of(
+                                                          context)
+                                                      .secondaryBackground,
+                                                ),
+                                                child: StreamBuilder<
+                                                    List<RatingsRecord>>(
+                                                  stream: queryRatingsRecord(
+                                                    queryBuilder: (ratingsRecord) =>
+                                                        ratingsRecord
+                                                            .where('user',
+                                                                isEqualTo:
+                                                                    projectProjectsRecord
+                                                                        .founder)
+                                                            .where('skill',
+                                                                isEqualTo:
+                                                                    containerSkillsRecord
+                                                                        .reference),
+                                                    singleRecord: true,
+                                                  ),
+                                                  builder: (context, snapshot) {
+                                                    // Customize what your widget looks like when it's loading.
+                                                    if (!snapshot.hasData) {
+                                                      return Center(
+                                                        child: SizedBox(
+                                                          width: 50,
+                                                          height: 50,
+                                                          child:
+                                                              SpinKitCubeGrid(
+                                                            color: FlutterFlowTheme
+                                                                    .of(context)
+                                                                .primaryColor,
+                                                            size: 50,
+                                                          ),
+                                                        ),
+                                                      );
+                                                    }
+                                                    List<RatingsRecord>
+                                                        containerRatingsRecordList =
+                                                        snapshot.data!;
+                                                    // Return an empty Container when the item does not exist.
+                                                    if (snapshot
+                                                        .data!.isEmpty) {
+                                                      return Container();
+                                                    }
+                                                    final containerRatingsRecord =
+                                                        containerRatingsRecordList
+                                                                .isNotEmpty
+                                                            ? containerRatingsRecordList
+                                                                .first
+                                                            : null;
+                                                    return Container(
+                                                      decoration: BoxDecoration(
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondaryBackground,
+                                                      ),
+                                                      child: Container(
+                                                        width: double.infinity,
+                                                        color: FlutterFlowTheme
+                                                                .of(context)
+                                                            .secondaryBackground,
+                                                        child:
+                                                            ExpandableNotifier(
+                                                          initialExpanded:
+                                                              false,
+                                                          child:
+                                                              ExpandablePanel(
+                                                            header: Align(
+                                                              alignment:
+                                                                  AlignmentDirectional(
+                                                                      0, 0),
+                                                              child: Row(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .max,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  Text(
+                                                                    'Project',
+                                                                    style: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyText2,
+                                                                  ),
+                                                                  SkilltagWidget(
+                                                                    key: Key(
+                                                                        'Keyzvf_${listViewSkillsIndex}_of_${listViewSkillsRatingsRecordList.length}'),
+                                                                    value:
+                                                                        containerSkillsRecord
+                                                                            .name,
+                                                                    selected:
+                                                                        false,
+                                                                  ),
+                                                                  Text(
+                                                                    'Founder',
+                                                                    style: FlutterFlowTheme.of(
+                                                                            context)
+                                                                        .bodyText2,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            collapsed:
+                                                                Container(
+                                                              width:
+                                                                  MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width,
+                                                              height: 40,
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: FlutterFlowTheme.of(
+                                                                        context)
+                                                                    .secondaryBackground,
+                                                              ),
+                                                              child: Row(
+                                                                mainAxisSize:
+                                                                    MainAxisSize
+                                                                        .min,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: [
+                                                                  RatingBarIndicator(
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                                index) =>
+                                                                            Icon(
+                                                                      Icons
+                                                                          .star_rounded,
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .tertiaryColor,
+                                                                    ),
+                                                                    direction: Axis
+                                                                        .horizontal,
+                                                                    rating: listViewSkillsRatingsRecord
+                                                                        .value!
+                                                                        .toDouble(),
+                                                                    unratedColor:
+                                                                        Color(
+                                                                            0xFF9E9E9E),
+                                                                    itemCount:
+                                                                        3,
+                                                                    itemSize:
+                                                                        40,
+                                                                  ),
+                                                                  RatingBarIndicator(
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                                index) =>
+                                                                            Icon(
+                                                                      Icons
+                                                                          .star_rounded,
+                                                                      color: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .secondaryColor,
+                                                                    ),
+                                                                    direction: Axis
+                                                                        .horizontal,
+                                                                    rating: containerRatingsRecord!
+                                                                        .value!
+                                                                        .toDouble(),
+                                                                    unratedColor:
+                                                                        Color(
+                                                                            0xFF9E9E9E),
+                                                                    itemCount:
+                                                                        3,
+                                                                    itemSize:
+                                                                        40,
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                            expanded: StreamBuilder<
+                                                                List<
+                                                                    RatingsRecord>>(
+                                                              stream:
+                                                                  queryRatingsRecord(
+                                                                queryBuilder: (ratingsRecord) => ratingsRecord
+                                                                    .where(
+                                                                        'user',
+                                                                        isEqualTo:
+                                                                            currentUserReference)
+                                                                    .where(
+                                                                        'skill',
+                                                                        isEqualTo:
+                                                                            containerSkillsRecord.reference),
+                                                                singleRecord:
+                                                                    true,
+                                                              ),
+                                                              builder: (context,
+                                                                  snapshot) {
+                                                                // Customize what your widget looks like when it's loading.
+                                                                if (!snapshot
+                                                                    .hasData) {
+                                                                  return Center(
+                                                                    child:
+                                                                        SizedBox(
+                                                                      width: 50,
+                                                                      height:
+                                                                          50,
+                                                                      child:
+                                                                          SpinKitCubeGrid(
+                                                                        color: FlutterFlowTheme.of(context)
+                                                                            .primaryColor,
+                                                                        size:
+                                                                            50,
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                }
+                                                                List<RatingsRecord>
+                                                                    columnRatingsRecordList =
+                                                                    snapshot
+                                                                        .data!;
+                                                                // Return an empty Container when the item does not exist.
+                                                                if (snapshot
+                                                                    .data!
+                                                                    .isEmpty) {
+                                                                  return Container();
+                                                                }
+                                                                final columnRatingsRecord =
+                                                                    columnRatingsRecordList
+                                                                            .isNotEmpty
+                                                                        ? columnRatingsRecordList
+                                                                            .first
+                                                                        : null;
+                                                                return Column(
+                                                                  mainAxisSize:
+                                                                      MainAxisSize
+                                                                          .max,
+                                                                  children: [
+                                                                    Row(
+                                                                      mainAxisSize:
+                                                                          MainAxisSize
+                                                                              .max,
+                                                                      mainAxisAlignment:
+                                                                          MainAxisAlignment
+                                                                              .spaceBetween,
+                                                                      children: [
+                                                                        RatingBarIndicator(
+                                                                          itemBuilder: (context, index) =>
+                                                                              Icon(
+                                                                            Icons.star_rounded,
+                                                                            color:
+                                                                                FlutterFlowTheme.of(context).tertiaryColor,
+                                                                          ),
+                                                                          direction:
+                                                                              Axis.horizontal,
+                                                                          rating: listViewSkillsRatingsRecord
+                                                                              .value!
+                                                                              .toDouble(),
+                                                                          unratedColor:
+                                                                              Color(0xFF9E9E9E),
+                                                                          itemCount:
+                                                                              3,
+                                                                          itemSize:
+                                                                              40,
+                                                                        ),
+                                                                        RatingBarIndicator(
+                                                                          itemBuilder: (context, index) =>
+                                                                              Icon(
+                                                                            Icons.star_rounded,
+                                                                            color:
+                                                                                FlutterFlowTheme.of(context).secondaryColor,
+                                                                          ),
+                                                                          direction:
+                                                                              Axis.horizontal,
+                                                                          rating: containerRatingsRecord!
+                                                                              .value!
+                                                                              .toDouble(),
+                                                                          unratedColor:
+                                                                              Color(0xFF9E9E9E),
+                                                                          itemCount:
+                                                                              3,
+                                                                          itemSize:
+                                                                              40,
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                                    Align(
+                                                                      alignment:
+                                                                          AlignmentDirectional(
+                                                                              0,
+                                                                              0),
+                                                                      child:
+                                                                          Text(
+                                                                        'Yours',
+                                                                        textAlign:
+                                                                            TextAlign.start,
+                                                                        style: FlutterFlowTheme.of(context)
+                                                                            .bodyText2,
+                                                                      ),
+                                                                    ),
+                                                                    RatingBarIndicator(
+                                                                      itemBuilder:
+                                                                          (context, index) =>
+                                                                              Icon(
+                                                                        Icons
+                                                                            .star_rounded,
+                                                                        color: FlutterFlowTheme.of(context)
+                                                                            .secondaryColor,
+                                                                      ),
+                                                                      direction:
+                                                                          Axis.horizontal,
+                                                                      rating: valueOrDefault<
+                                                                          double>(
+                                                                        columnRatingsRecord !=
+                                                                                null
+                                                                            ? columnRatingsRecord!.value?.toDouble()
+                                                                            : 0.0,
+                                                                        0.0,
+                                                                      ),
+                                                                      unratedColor:
+                                                                          Color(
+                                                                              0xFF9E9E9E),
+                                                                      itemCount:
+                                                                          3,
+                                                                      itemSize:
+                                                                          40,
+                                                                    ),
+                                                                    Text(
+                                                                      'Potential roles based on skill ratings:',
+                                                                      textAlign:
+                                                                          TextAlign
+                                                                              .start,
+                                                                      style: FlutterFlowTheme.of(
+                                                                              context)
+                                                                          .bodyText2
+                                                                          .override(
+                                                                            fontFamily:
+                                                                                'Poppins',
+                                                                            fontWeight:
+                                                                                FontWeight.normal,
+                                                                          ),
+                                                                    ),
+                                                                    Builder(
+                                                                      builder:
+                                                                          (context) {
+                                                                        final partnerTypes = functions
+                                                                            .getPartnerTypesFromRatings(
+                                                                                listViewSkillsRatingsRecord.value!,
+                                                                                valueOrDefault<int>(
+                                                                                  columnRatingsRecord != null ? columnRatingsRecord!.value : 0,
+                                                                                  0,
+                                                                                ),
+                                                                                containerRatingsRecord!.value)
+                                                                            .toList();
+                                                                        return Wrap(
+                                                                          spacing:
+                                                                              10,
+                                                                          runSpacing:
+                                                                              0,
+                                                                          alignment:
+                                                                              WrapAlignment.start,
+                                                                          crossAxisAlignment:
+                                                                              WrapCrossAlignment.start,
+                                                                          direction:
+                                                                              Axis.horizontal,
+                                                                          runAlignment:
+                                                                              WrapAlignment.start,
+                                                                          verticalDirection:
+                                                                              VerticalDirection.down,
+                                                                          clipBehavior:
+                                                                              Clip.none,
+                                                                          children: List.generate(
+                                                                              partnerTypes.length,
+                                                                              (partnerTypesIndex) {
+                                                                            final partnerTypesItem =
+                                                                                partnerTypes[partnerTypesIndex];
+                                                                            return Text(
+                                                                              partnerTypesItem,
+                                                                              textAlign: TextAlign.center,
+                                                                              style: FlutterFlowTheme.of(context).bodyText1.override(
+                                                                                    fontFamily: 'Poppins',
+                                                                                    color: FlutterFlowTheme.of(context).secondaryColor,
+                                                                                  ),
+                                                                            );
+                                                                          }),
+                                                                        );
+                                                                      },
+                                                                    ),
+                                                                    Divider(
+                                                                      thickness:
+                                                                          1,
+                                                                      indent:
+                                                                          10,
+                                                                      endIndent:
+                                                                          10,
+                                                                    ),
+                                                                  ],
+                                                                );
+                                                              },
+                                                            ),
+                                                            theme:
+                                                                ExpandableThemeData(
+                                                              tapHeaderToExpand:
+                                                                  true,
+                                                              tapBodyToExpand:
+                                                                  false,
+                                                              tapBodyToCollapse:
+                                                                  false,
+                                                              headerAlignment:
+                                                                  ExpandablePanelHeaderAlignment
+                                                                      .center,
+                                                              hasIcon: false,
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ),
+                                Divider(
+                                  thickness: 2,
+                                  indent: 12,
+                                  endIndent: 12,
+                                  color: FlutterFlowTheme.of(context)
+                                      .primaryBackground,
+                                ),
+                                if (projectProjectsRecord.stream != null &&
+                                    projectProjectsRecord.stream != '')
+                                  Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            20, 4, 20, 4),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          children: [
+                                            Text(
+                                              'StreamDetails',
+                                              style:
+                                                  FlutterFlowTheme.of(context)
+                                                      .bodyText2,
+                                            ),
+                                          ],
                                         ),
                                       ),
+                                      Padding(
+                                        padding: EdgeInsetsDirectional.fromSTEB(
+                                            20, 0, 0, 0),
+                                        child: FFButtonWidget(
+                                          onPressed: () async {
+                                            logFirebaseEvent(
+                                                'PROJECT_PAGE_VIEW_STREAM_BTN_ON_TAP');
+                                            logFirebaseEvent(
+                                                'Button_launch_u_r_l');
+                                            await launchURL(
+                                                projectProjectsRecord.stream!);
+                                          },
+                                          text: 'View stream',
+                                          options: FFButtonOptions(
+                                            width: 160,
+                                            height: 40,
+                                            color: FlutterFlowTheme.of(context)
+                                                .primaryColor,
+                                            textStyle:
+                                                FlutterFlowTheme.of(context)
+                                                    .subtitle2
+                                                    .override(
+                                                      fontFamily: 'Poppins',
+                                                      color: Colors.white,
+                                                    ),
+                                            borderSide: BorderSide(
+                                              color: Colors.transparent,
+                                              width: 1,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                        ),
+                                      ),
+                                      Divider(
+                                        thickness: 2,
+                                        indent: 12,
+                                        endIndent: 12,
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryBackground,
+                                      ),
+                                    ],
+                                  ),
+                                Padding(
+                                  padding: EdgeInsetsDirectional.fromSTEB(
+                                      20, 20, 20, 20),
+                                  child: FFButtonWidget(
+                                    onPressed: () async {
+                                      logFirebaseEvent(
+                                          'PROJECT_PAGE_JOIN_PROJECT_BTN_ON_TAP');
+                                      logFirebaseEvent('Button_launch_u_r_l');
+                                      await launchURL(
+                                          projectProjectsRecord.stream!);
+                                    },
+                                    text: 'Join Project',
+                                    options: FFButtonOptions(
+                                      width: double.infinity,
+                                      height: 40,
+                                      color: FlutterFlowTheme.of(context)
+                                          .primaryColor,
+                                      textStyle: FlutterFlowTheme.of(context)
+                                          .subtitle2
+                                          .override(
+                                            fontFamily: 'Poppins',
+                                            color: Colors.white,
+                                          ),
+                                      borderSide: BorderSide(
+                                        color: Colors.transparent,
+                                        width: 1,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
-                                  ],
+                                  ),
                                 ),
                               ],
                             );

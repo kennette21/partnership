@@ -23,6 +23,8 @@ abstract class ProjectsRecord
 
   String? get stream;
 
+  double? get completeness;
+
   @BuiltValueField(wireName: kDocumentReferenceField)
   DocumentReference? get ffRef;
   DocumentReference get reference => ffRef!;
@@ -31,7 +33,8 @@ abstract class ProjectsRecord
     ..description = ''
     ..title = ''
     ..keywords = ListBuilder()
-    ..stream = '';
+    ..stream = ''
+    ..completeness = 0.0;
 
   static CollectionReference get collection =>
       FirebaseFirestore.instance.collection('projects');
@@ -52,6 +55,7 @@ abstract class ProjectsRecord
           ..founder = safeGet(() => toRef(snapshot.data['founder']))
           ..keywords = safeGet(() => ListBuilder(snapshot.data['keywords']))
           ..stream = snapshot.data['stream']
+          ..completeness = snapshot.data['completeness']?.toDouble()
           ..ffRef = ProjectsRecord.collection.doc(snapshot.objectID),
       );
 
@@ -85,6 +89,7 @@ Map<String, dynamic> createProjectsRecordData({
   String? title,
   DocumentReference? founder,
   String? stream,
+  double? completeness,
 }) {
   final firestoreData = serializers.toFirestore(
     ProjectsRecord.serializer,
@@ -94,7 +99,8 @@ Map<String, dynamic> createProjectsRecordData({
         ..title = title
         ..founder = founder
         ..keywords = null
-        ..stream = stream,
+        ..stream = stream
+        ..completeness = completeness,
     ),
   );
 

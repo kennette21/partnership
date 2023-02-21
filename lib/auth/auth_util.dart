@@ -25,6 +25,7 @@ Future<User?> signInOrCreateAccount(
 ) async {
   try {
     final userCredential = await signInFunc();
+    logFirebaseAuthEvent(userCredential?.user, authProvider);
     if (userCredential?.user != null) {
       await maybeCreateUser(userCredential!.user!);
     }
@@ -39,7 +40,7 @@ Future<User?> signInOrCreateAccount(
 }
 
 Future signOut() {
-  updateUserJwtTimer();
+  logFirebaseEvent("SIGN_OUT");
   return FirebaseAuth.instance.signOut();
 }
 
@@ -49,6 +50,7 @@ Future deleteUser(BuildContext context) async {
       print('Error: delete user attempted with no logged in user!');
       return;
     }
+    logFirebaseEvent("DELETE_USER");
     await currentUser?.user?.delete();
   } on FirebaseAuthException catch (e) {
     if (e.code == 'requires-recent-login') {
@@ -108,27 +110,13 @@ bool get currentUserEmailVerified {
   return currentUser?.user?.emailVerified ?? false;
 }
 
-/// Create a timer that periodically gets the current user's JWT Token,
-/// since Firebase generates a new token every hour.
-Timer? _jwtTimer;
+/// Create a Stream that listens to the current user's JWT Token, since Firebase
+/// generates a new token every hour.
 String? _currentJwtToken;
-Future updateUserJwtTimer([User? user]) async {
-  _jwtTimer?.cancel();
-  // Clear the JWT token and return if the user is not logged in.
-  if (user == null) {
-    _currentJwtToken = null;
-    return;
-  }
-  // Update the user's JWT token immediately and then every hour
-  // based on the [currentUser].
-  try {
-    _currentJwtToken = await user.getIdToken();
-    _jwtTimer = Timer.periodic(
-      Duration(hours: 1),
-      (_) async => _currentJwtToken = await currentUser?.user?.getIdToken(),
-    );
-  } catch (_) {}
-}
+final jwtTokenStream = FirebaseAuth.instance
+    .idTokenChanges()
+    .map((user) async => _currentJwtToken = await user?.getIdToken())
+    .asBroadcastStream();
 
 // Set when using phone verification (after phone number is provided).
 String? _phoneAuthVerificationCode;
@@ -146,6 +134,7 @@ Future beginPhoneAuth({
     onCodeSent();
     return;
   }
+  final completer = Completer<bool>();
   // If you'd like auto-verification, without the user having to enter the SMS
   // code manually. Follow these instructions:
   // * For Android: https://firebase.google.com/docs/auth/android/phone-auth?authuser=0#enable-app-verification (SafetyNet set up)
@@ -165,16 +154,20 @@ Future beginPhoneAuth({
       // );
     },
     verificationFailed: (e) {
+      completer.complete(false);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Error: ${e.message!}'),
       ));
     },
     codeSent: (verificationId, _) {
       _phoneAuthVerificationCode = verificationId;
+      completer.complete(true);
       onCodeSent();
     },
     codeAutoRetrievalTimeout: (_) {},
   );
+
+  return completer.future;
 }
 
 Future verifySmsCode({
@@ -216,13 +209,14 @@ final authenticatedUserStream = FirebaseAuth.instance
     .asBroadcastStream();
 
 class AuthUserStreamWidget extends StatelessWidget {
-  const AuthUserStreamWidget({Key? key, required this.child}) : super(key: key);
+  const AuthUserStreamWidget({Key? key, required this.builder})
+      : super(key: key);
 
-  final Widget child;
+  final WidgetBuilder builder;
 
   @override
   Widget build(BuildContext context) => StreamBuilder(
         stream: authenticatedUserStream,
-        builder: (context, _) => child,
+        builder: (context, _) => builder(context),
       );
 }

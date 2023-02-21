@@ -1,15 +1,23 @@
 import '../auth/auth_util.dart';
 import '../backend/backend.dart';
+import '../components/edit_profile_prompt_widget.dart';
 import '../create_project/create_project_widget.dart';
 import '../flutter_flow/flutter_flow_choice_chips.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/flutter_flow_util.dart';
+import '../flutter_flow/flutter_flow_widgets.dart';
 import '../project/project_widget.dart';
+import '../streams_page/streams_page_widget.dart';
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:easy_debounce/easy_debounce.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'browse_model.dart';
+export 'browse_model.dart';
 
 class BrowseWidget extends StatefulWidget {
   const BrowseWidget({Key? key}) : super(key: key);
@@ -19,22 +27,48 @@ class BrowseWidget extends StatefulWidget {
 }
 
 class _BrowseWidgetState extends State<BrowseWidget> {
-  Completer<List<ProjectsRecord>>? _algoliaRequestCompleter;
-  List<String>? skillChoicesValues;
-  TextEditingController? searchFieldController;
+  late BrowseModel _model;
+
   final scaffoldKey = GlobalKey<ScaffoldState>();
-  ProjectsRecord? newProjectRef;
 
   @override
   void initState() {
     super.initState();
-    searchFieldController = TextEditingController();
+    _model = createModel(context, () => BrowseModel());
+
+    logFirebaseEvent('screen_view', parameters: {'screen_name': 'Browse'});
+    // On page load action.
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      logFirebaseEvent('BROWSE_PAGE_Browse_ON_PAGE_LOAD');
+      if (valueOrDefault(currentUserDocument?.bio, '') == null ||
+          valueOrDefault(currentUserDocument?.bio, '') == '') {
+        logFirebaseEvent('Browse_bottom_sheet');
+        await showModalBottomSheet(
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          context: context,
+          builder: (context) {
+            return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: EditProfilePromptWidget(),
+            );
+          },
+        ).then((value) => setState(() {}));
+
+        return;
+      } else {
+        return;
+      }
+    });
+
+    _model.searchFieldController ??= TextEditingController();
     WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
   }
 
   @override
   void dispose() {
-    searchFieldController?.dispose();
+    _model.dispose();
+
     super.dispose();
   }
 
@@ -50,20 +84,24 @@ class _BrowseWidgetState extends State<BrowseWidget> {
             visible:
                 valueOrDefault<bool>(currentUserDocument?.isFounder, false),
             child: AuthUserStreamWidget(
-              child: FloatingActionButton(
+              builder: (context) => FloatingActionButton(
                 onPressed: () async {
+                  logFirebaseEvent('BROWSE_FloatingActionButton_i6jsit4h_ON_');
+                  logFirebaseEvent('FloatingActionButton_backend_call');
+
                   final projectsCreateData = createProjectsRecordData(
                     founder: currentUserReference,
                   );
                   var projectsRecordReference = ProjectsRecord.collection.doc();
                   await projectsRecordReference.set(projectsCreateData);
-                  newProjectRef = ProjectsRecord.getDocumentFromData(
+                  _model.newProjectRef = ProjectsRecord.getDocumentFromData(
                       projectsCreateData, projectsRecordReference);
+                  logFirebaseEvent('FloatingActionButton_navigate_to');
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => CreateProjectWidget(
-                        projectRef: newProjectRef!.reference,
+                        projectRef: _model.newProjectRef!.reference,
                       ),
                     ),
                   );
@@ -92,7 +130,38 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                     fontWeight: FontWeight.bold,
                   ),
             ),
-            actions: [],
+            actions: [
+              Padding(
+                padding: EdgeInsetsDirectional.fromSTEB(6, 10, 6, 10),
+                child: FFButtonWidget(
+                  onPressed: () async {
+                    logFirebaseEvent('BROWSE_PAGE_STREAMS_BTN_ON_TAP');
+                    logFirebaseEvent('Button_navigate_to');
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StreamsPageWidget(),
+                      ),
+                    );
+                  },
+                  text: 'Streams',
+                  options: FFButtonOptions(
+                    width: 130,
+                    height: 40,
+                    color: FlutterFlowTheme.of(context).primaryColor,
+                    textStyle: FlutterFlowTheme.of(context).subtitle2.override(
+                          fontFamily: 'Poppins',
+                          color: Colors.white,
+                        ),
+                    borderSide: BorderSide(
+                      color: Colors.transparent,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
             centerTitle: false,
             elevation: 0,
           ),
@@ -122,9 +191,9 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                         child: Padding(
                           padding: EdgeInsetsDirectional.fromSTEB(20, 4, 20, 0),
                           child: TextFormField(
-                            controller: searchFieldController,
+                            controller: _model.searchFieldController,
                             onChanged: (_) => EasyDebounce.debounce(
-                              'searchFieldController',
+                              '_model.searchFieldController',
                               Duration(milliseconds: 500),
                               () => setState(() {}),
                             ),
@@ -148,7 +217,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
-                                  color: Color(0xFFF1F4F8),
+                                  color: Color(0x00000000),
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(8),
@@ -182,6 +251,8 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                   fontSize: 14,
                                   fontWeight: FontWeight.normal,
                                 ),
+                            validator: _model.searchFieldControllerValidator
+                                .asValidator(context),
                           ),
                         ),
                       ),
@@ -224,9 +295,10 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                             child: SizedBox(
                               width: 50,
                               height: 50,
-                              child: CircularProgressIndicator(
+                              child: SpinKitCubeGrid(
                                 color:
                                     FlutterFlowTheme.of(context).primaryColor,
+                                size: 50,
                               ),
                             ),
                           );
@@ -235,12 +307,13 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                             snapshot.data!;
                         return FlutterFlowChoiceChips(
                           options: skillChoicesSkillsRecordList
-                              .map((e) => e.name!)
+                              .map((e) => e.name)
+                              .withoutNulls
                               .toList()
                               .map((label) => ChipData(label))
                               .toList(),
                           onChanged: (val) =>
-                              setState(() => skillChoicesValues = val),
+                              setState(() => _model.skillChoicesValues = val),
                           selectedChipStyle: ChipStyle(
                             backgroundColor:
                                 FlutterFlowTheme.of(context).tertiaryColor,
@@ -271,7 +344,7 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                           ),
                           chipSpacing: 8,
                           multiselect: true,
-                          initialized: skillChoicesValues != null,
+                          initialized: _model.skillChoicesValues != null,
                           alignment: WrapAlignment.start,
                         );
                       },
@@ -295,8 +368,8 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                     ],
                   ),
                 ),
-                if (searchFieldController!.text == null ||
-                    searchFieldController!.text == '')
+                if (_model.searchFieldController.text == null ||
+                    _model.searchFieldController.text == '')
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 50),
                     child: StreamBuilder<List<ProjectsRecord>>(
@@ -304,8 +377,8 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                         queryBuilder: (projectsRecord) =>
                             projectsRecord.whereArrayContainsAny(
                                 'keywords',
-                                skillChoicesValues != ''
-                                    ? skillChoicesValues
+                                _model.skillChoicesValues != ''
+                                    ? _model.skillChoicesValues
                                     : null),
                         limit: 10,
                       ),
@@ -316,9 +389,10 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                             child: SizedBox(
                               width: 50,
                               height: 50,
-                              child: CircularProgressIndicator(
+                              child: SpinKitCubeGrid(
                                 color:
                                     FlutterFlowTheme.of(context).primaryColor,
+                                size: 50,
                               ),
                             ),
                           );
@@ -339,6 +413,9 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                   EdgeInsetsDirectional.fromSTEB(4, 0, 4, 6),
                               child: InkWell(
                                 onTap: () async {
+                                  logFirebaseEvent(
+                                      'BROWSE_PAGE_ProjectCar_ON_TAP');
+                                  logFirebaseEvent('ProjectCar_navigate_to');
                                   await Navigator.push(
                                     context,
                                     MaterialPageRoute(
@@ -372,11 +449,11 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                                 child: SizedBox(
                                                   width: 50,
                                                   height: 50,
-                                                  child:
-                                                      CircularProgressIndicator(
+                                                  child: SpinKitCubeGrid(
                                                     color: FlutterFlowTheme.of(
                                                             context)
                                                         .primaryColor,
+                                                    size: 50,
                                                   ),
                                                 ),
                                               );
@@ -523,10 +600,11 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                                           width: 50,
                                                           height: 50,
                                                           child:
-                                                              CircularProgressIndicator(
+                                                              SpinKitCubeGrid(
                                                             color: FlutterFlowTheme
                                                                     .of(context)
                                                                 .primaryColor,
+                                                            size: 50,
                                                           ),
                                                         ),
                                                       );
@@ -600,9 +678,11 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                                                         height:
                                                                             50,
                                                                         child:
-                                                                            CircularProgressIndicator(
+                                                                            SpinKitCubeGrid(
                                                                           color:
                                                                               FlutterFlowTheme.of(context).primaryColor,
+                                                                          size:
+                                                                              50,
                                                                         ),
                                                                       ),
                                                                     );
@@ -651,15 +731,15 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                       },
                     ),
                   ),
-                if (searchFieldController!.text != null &&
-                    searchFieldController!.text != '')
+                if (_model.searchFieldController.text != null &&
+                    _model.searchFieldController.text != '')
                   Padding(
                     padding: EdgeInsetsDirectional.fromSTEB(0, 0, 0, 50),
                     child: FutureBuilder<List<ProjectsRecord>>(
-                      future: (_algoliaRequestCompleter ??=
+                      future: (_model.algoliaRequestCompleter ??=
                               Completer<List<ProjectsRecord>>()
                                 ..complete(ProjectsRecord.search(
-                                  term: searchFieldController!.text,
+                                  term: _model.searchFieldController.text,
                                 )))
                           .future,
                       builder: (context, snapshot) {
@@ -669,9 +749,10 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                             child: SizedBox(
                               width: 50,
                               height: 50,
-                              child: CircularProgressIndicator(
+                              child: SpinKitCubeGrid(
                                 color:
                                     FlutterFlowTheme.of(context).primaryColor,
+                                size: 50,
                               ),
                             ),
                           );
@@ -690,8 +771,13 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                         }
                         return RefreshIndicator(
                           onRefresh: () async {
-                            setState(() => _algoliaRequestCompleter = null);
-                            await waitForAlgoliaRequestCompleter();
+                            logFirebaseEvent(
+                                'BROWSE_Row-SearchProjects_ON_PULL_TO_REF');
+                            logFirebaseEvent(
+                                'Row-SearchProjects_refresh_database_requ');
+                            setState(
+                                () => _model.algoliaRequestCompleter = null);
+                            await _model.waitForAlgoliaRequestCompleter();
                           },
                           child: ListView.builder(
                             padding: EdgeInsets.zero,
@@ -709,6 +795,9 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                     EdgeInsetsDirectional.fromSTEB(4, 0, 4, 6),
                                 child: InkWell(
                                   onTap: () async {
+                                    logFirebaseEvent(
+                                        'BROWSE_PAGE_ProjectCar_ON_TAP');
+                                    logFirebaseEvent('ProjectCar_navigate_to');
                                     await Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -743,12 +832,12 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                                   child: SizedBox(
                                                     width: 50,
                                                     height: 50,
-                                                    child:
-                                                        CircularProgressIndicator(
+                                                    child: SpinKitCubeGrid(
                                                       color:
                                                           FlutterFlowTheme.of(
                                                                   context)
                                                               .primaryColor,
+                                                      size: 50,
                                                     ),
                                                   ),
                                                 );
@@ -810,10 +899,11 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                                               width: 50,
                                                               height: 50,
                                                               child:
-                                                                  CircularProgressIndicator(
+                                                                  SpinKitCubeGrid(
                                                                 color: FlutterFlowTheme.of(
                                                                         context)
                                                                     .primaryColor,
+                                                                size: 50,
                                                               ),
                                                             ),
                                                           );
@@ -913,10 +1003,11 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                                             width: 50,
                                                             height: 50,
                                                             child:
-                                                                CircularProgressIndicator(
+                                                                SpinKitCubeGrid(
                                                               color: FlutterFlowTheme
                                                                       .of(context)
                                                                   .primaryColor,
+                                                              size: 50,
                                                             ),
                                                           ),
                                                         );
@@ -993,9 +1084,11 @@ class _BrowseWidgetState extends State<BrowseWidget> {
                                                                           height:
                                                                               50,
                                                                           child:
-                                                                              CircularProgressIndicator(
+                                                                              SpinKitCubeGrid(
                                                                             color:
                                                                                 FlutterFlowTheme.of(context).primaryColor,
+                                                                            size:
+                                                                                50,
                                                                           ),
                                                                         ),
                                                                       );
@@ -1049,20 +1142,5 @@ class _BrowseWidgetState extends State<BrowseWidget> {
             ),
           ),
         ));
-  }
-
-  Future waitForAlgoliaRequestCompleter({
-    double minWait = 0,
-    double maxWait = double.infinity,
-  }) async {
-    final stopwatch = Stopwatch()..start();
-    while (true) {
-      await Future.delayed(Duration(milliseconds: 50));
-      final timeElapsed = stopwatch.elapsedMilliseconds;
-      final requestComplete = _algoliaRequestCompleter?.isCompleted ?? false;
-      if (timeElapsed > maxWait || (requestComplete && timeElapsed > minWait)) {
-        break;
-      }
-    }
   }
 }

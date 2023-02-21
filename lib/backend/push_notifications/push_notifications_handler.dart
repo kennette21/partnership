@@ -5,11 +5,14 @@ import 'serialization_util.dart';
 import '../backend.dart';
 import '../../flutter_flow/flutter_flow_theme.dart';
 import '../../flutter_flow/flutter_flow_util.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 import '../../index.dart';
 import '../../main.dart';
+
+final _handledMessageIds = <String?>{};
 
 class PushNotificationsHandler extends StatefulWidget {
   const PushNotificationsHandler({Key? key, required this.child})
@@ -38,7 +41,14 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
   }
 
   Future _handlePushNotification(RemoteMessage message) async {
-    setState(() => _loading = true);
+    if (_handledMessageIds.contains(message.messageId)) {
+      return;
+    }
+    _handledMessageIds.add(message.messageId);
+
+    if (mounted) {
+      setState(() => _loading = true);
+    }
     try {
       final initialPageName = message.data['initialPageName'] as String;
       final initialParameterData = getInitialParameterData(message.data);
@@ -53,7 +63,9 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
     } catch (e) {
       print('Error: $e');
     } finally {
-      setState(() => _loading = false);
+      if (mounted) {
+        setState(() => _loading = false);
+      }
     }
   }
 
@@ -68,8 +80,8 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
       ? Container(
           color: Colors.transparent,
           child: Image.asset(
-            'assets/images/Partnership_Logo_Dark.svg',
-            fit: BoxFit.contain,
+            'assets/images/Splash_Logo.png',
+            fit: BoxFit.cover,
           ),
         )
       : widget.child;
@@ -77,8 +89,8 @@ class _PushNotificationsHandlerState extends State<PushNotificationsHandler> {
 
 final pageBuilderMap = <String, Future<Widget> Function(Map<String, dynamic>)>{
   'Login': (data) async => LoginWidget(),
-  'Profile': (data) async => NavBarPage(initialPage: 'Profile'),
   'EditProfile': (data) async => EditProfileWidget(),
+  'Profile': (data) async => NavBarPage(initialPage: 'Profile'),
   'Project': (data) async => ProjectWidget(
         projectRef: getParameter(data, 'projectRef'),
       ),
@@ -89,6 +101,21 @@ final pageBuilderMap = <String, Future<Widget> Function(Map<String, dynamic>)>{
         user: getParameter(data, 'user'),
       ),
   'StreamHelp': (data) async => StreamHelpWidget(),
+  'ChatPage': (data) async => ChatPageWidget(
+        chatUser: await getDocumentParameter(
+            data, 'chatUser', UsersRecord.serializer),
+        chatRef: getParameter(data, 'chatRef'),
+      ),
+  'AllChatsPage': (data) async => NavBarPage(initialPage: 'AllChatsPage'),
+  'StreamsPage': (data) async => StreamsPageWidget(),
+  'BroadcastPage': (data) async => BroadcastPageWidget(
+        videoName: getParameter(data, 'videoName'),
+      ),
+  'LiveVideoPage': (data) async => LiveVideoPageWidget(
+        streamData: await getDocumentParameter(
+            data, 'streamData', StreamsRecord.serializer),
+      ),
+  'RecordedVideoPage': (data) async => RecordedVideoPageWidget(),
 };
 
 bool hasMatchingParameters(Map<String, dynamic> data, Set<String> params) =>
